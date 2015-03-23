@@ -31,5 +31,5 @@ $body->append([
 
 $body->append([
     'tag' => 'code',
-    'data' => (string) $body->select('$body>input[type="checkbox"]:autocomplete:checked')
+    'data' => (string) $body->select('$body>input:checkbox:autocomplete:checked')
 ]);
