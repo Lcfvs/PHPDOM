@@ -10,6 +10,14 @@ require_once __DIR__ . '/Selector.php';
 
 class DOM_Element extends DOMElement
 {
+    public function prepend($definition)
+    {
+        $node = $this->create($definition);
+        $this->parentNode->insertBefore($node, $this);
+
+        return $node;
+    }
+    
     public function append($definition)
     {
         $node = $this->create($definition);
