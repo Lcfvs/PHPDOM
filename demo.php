@@ -20,6 +20,11 @@ $body->insert([
     'data' => 'Hello ...'
 ], 'h2');
 
+$body->append([
+    'tag' => 'p',
+    'data' => '...'
+]);
+
 $input = $body->append([
     'tag' => 'input',
     'attributes' => [
