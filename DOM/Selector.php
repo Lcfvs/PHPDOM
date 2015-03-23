@@ -10,20 +10,20 @@ https://github.com/Lcfvs/reg-invoker
 class DOM_Selector
 {
     private static $_queries = [];
-    
+
     private function __construct()
     {}
-    
+
     public static function parse($selector)
     {
         $queries = &self::$_queries;
-        
+
         if (array_key_exists($selector, $queries)) {
             return $queries[$selector];
         }
-        
+
         $query = $selector;
-        
+
         // remove spaces around operators
         $query = preg_replace('/\s*>\s*/', '>', $query);
         $query = preg_replace('/\s*~\s*/', '~', $query);
@@ -89,7 +89,7 @@ class DOM_Selector
         $query = 'descendant-or-self::' . $query;
         // :scope
         $query = preg_replace('/(((\|)?descendant-or-self::):scope)/', '.\3', $query);
-        
+
         return $queries[$selector] = $query;
     }
 }
