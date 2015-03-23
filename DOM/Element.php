@@ -6,6 +6,8 @@ Released under the MIT license
  -
 https://github.com/Lcfvs/reg-invoker
 */
+require_once __DIR__ . '/Selector.php';
+
 class DOM_Element extends DOMElement
 {
     public function append($definition)

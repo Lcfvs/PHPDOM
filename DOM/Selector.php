@@ -75,11 +75,11 @@ class DOM_Selector
             // :contains(Foo)
             $query = preg_replace('/([\w\-]+):contains\((.*?)\)/', '\1[contains(string(.),"\2")]', $query);
             // >
-            $query = preg_replace('/\s*>\s*/', '/', $query);
+            $query = preg_replace('/>/', '/', $query);
             // ~
-            $query = preg_replace('/\s*~\s*/', '/following-sibling::', $query);
+            $query = preg_replace('/~/', '/following-sibling::', $query);
             // +
-            $query = preg_replace('/\s*\+\s*([\w\-]+)/', '/following-sibling::\1[position()=1]', $query);
+            $query = preg_replace('/\+([\w\-]+)/', '/following-sibling::\1[position()=1]', $query);
             $query = str_replace(']*', ']', $query);
             $query = str_replace(']/*', ']', $query);
         }
@@ -87,7 +87,9 @@ class DOM_Selector
         // ' '
         $query = implode('/descendant::', $queries);
         $query = 'descendant-or-self::' . $query;
-
+        // :scope
+        $query = preg_replace('/(((\|)?descendant-or-self::):scope)/', '.\3', $query);
+        
         return $queries[$selector] = $query;
     }
 }

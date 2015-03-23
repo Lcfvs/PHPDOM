@@ -6,7 +6,7 @@ Released under the MIT license
  -
 https://github.com/Lcfvs/reg-invoker
 */
-require_once '../Element.php';
+require_once __DIR__ . '../Element.php';
 
 class DOM_HTML_Element extends DOM_Element
 {
