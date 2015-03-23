@@ -34,8 +34,6 @@ class DOM_Selector
         foreach ($queries as &$query) {
             // ,
             $query = preg_replace('/,/', '|descendant-or-self::', $query);
-            // $
-            $query = preg_replace('/(\$)(.+)/', '\2/..', $query);//var_dump($query);
             // input:checked, :disabled, etc.
             $query = preg_replace('/(.+)?:(checked|disabled|required|autofocus)/', '\1[@\2="\2"]', $query);
             // input:autocomplete, :autocomplete
@@ -89,6 +87,23 @@ class DOM_Selector
         $query = 'descendant-or-self::' . $query;
         // :scope
         $query = preg_replace('/(((\|)?descendant-or-self::):scope)/', '.\3', $query);
+        // $element
+        $sub_queries = explode(',', $query);
+
+        foreach ($sub_queries as $key => $sub_query) {
+            $parts = explode('$', $sub_query);
+            $sub_query = array_shift($parts);
+
+            if (count($parts) && preg_match_all('/((?:[^\/]*\/?\/?)|$)/', $parts[0], $matches)) {
+                $results = $matches[0];
+                $results[] = str_repeat('/..', count($results) - 2);
+                $sub_query .= implode('', $results);
+            }
+
+            $sub_queries[$key] = $sub_query;
+        }
+
+        $query = implode(',', $sub_queries);
 
         return $queries[$selector] = $query;
     }

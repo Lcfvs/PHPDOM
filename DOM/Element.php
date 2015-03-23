@@ -34,6 +34,14 @@ class DOM_Element extends DOMElement
         return $node;
     }
 
+    public function decorate($definition)
+    {
+        $node = $this->parentNode->insert($definition, $this);
+        $node->appendChild($this);
+
+        return $node;
+    }
+
     public function setAttributes($attributes)
     {
         foreach ($attributes as $name => $value) {

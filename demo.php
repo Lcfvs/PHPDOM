@@ -20,7 +20,7 @@ $body->insert([
     'data' => 'Hello ...'
 ], 'h2');
 
-$body->append([
+$input = $body->append([
     'tag' => 'input',
     'attributes' => [
         'type' => 'checkbox',
@@ -29,7 +29,11 @@ $body->append([
     ]
 ]);
 
+$input->decorate([
+    'tag' => 'p'
+]);
+
 $body->append([
     'tag' => 'code',
-    'data' => (string) $body->select('$body>input:checkbox:autocomplete:checked')
+    'data' => (string) $body->select('body > $p > input:checkbox:autocomplete:checked')
 ]);
