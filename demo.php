@@ -35,5 +35,5 @@ $input->decorate([
 
 $body->append([
     'tag' => 'code',
-    'data' => (string) $body->select('body > $p > input:checkbox:autocomplete:checked')
+    'data' => (string) $body->select(':scope > $p > input:checkbox:autocomplete:checked')
 ]);
