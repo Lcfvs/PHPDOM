@@ -49,17 +49,17 @@ class DOM_Selector
             // [id=foo]
             $query = preg_replace('/^\[/', '*[', $query);
             // div#foo
-            $query = preg_replace('/([\w\-]+)\#([_\w-]+[_\w\d-]*)/', '\1[@id="\2"]', $query);
+            $query = preg_replace('/([_\w-]+[_\w\d-]*)\#([_\w-]+[_\w\d-]*)/', '\1[@id="\2"]', $query);
             // #foo
             $query = preg_replace('/\#([_\w-]+[_\w\d-]*)/', '*[@id="\1"]', $query);
             // div.foo
-            $query = preg_replace('/([\w\-]+)\.([_\w-]+[_\w\d-]*)/', '\1[contains(concat(" ",@class," ")," \2 ")]', $query);
+            $query = preg_replace('/([_\w-]+[_\w\d-]*)\.([_\w-]+[_\w\d-]*)/', '\1[contains(concat(" ",@class," ")," \2 ")]', $query);
             // .foo
             $query = preg_replace('/\.([_\w-]+[_\w\d-]*)/', '*[contains(concat(" ",@class," ")," \1 ")]', $query);
             // div:first-child
-            $query = preg_replace('/([\w]+):first-child/', '*/\1[position()=1]', $query);
+            $query = preg_replace('/([_\w-]+[_\w\d-]*):first-child/', '*/\1[position()=1]', $query);
             // div:last-child
-            $query = preg_replace('/([\w]+):last-child/', '*/\1[position()=last()]', $query);
+            $query = preg_replace('/([_\w-]+[_\w\d-]*):last-child/', '*/\1[position()=last()]', $query);
             // :first-child
             $query = str_replace(':first-child', '*/*[position()=1]', $query);
             // :last-child
@@ -67,17 +67,17 @@ class DOM_Selector
             // :nth-last-child
             $query = preg_replace('/:nth-last-child\((\d+)\)/', '[position()=(last() - (\1 - 1))]', $query);
             // div:nth-child
-            $query = preg_replace('/([\w\-]+):nth-child\((\d+)\)/', '*/*[position()=\2 and self::\1]', $query);
+            $query = preg_replace('/([_\w-]+[_\w\d-]*):nth-child\((\d+)\)/', '*/*[position()=\2 and self::\1]', $query);
             // :nth-child
             $query = preg_replace('/:nth-child\((\d+)\)/', '*/*[position()=\1]', $query);
             // :contains(Foo)
-            $query = preg_replace('/([\w\-]+):contains\((.*?)\)/', '\1[contains(string(.),"\2")]', $query);
+            $query = preg_replace('/([_\w-]+[_\w\d-]*):contains\((.*?)\)/', '\1[contains(string(.),"\2")]', $query);
             // >
             $query = preg_replace('/>/', '/', $query);
             // ~
             $query = preg_replace('/~/', '/following-sibling::', $query);
             // +
-            $query = preg_replace('/\+([\w\-]+)/', '/following-sibling::\1[position()=1]', $query);
+            $query = preg_replace('/\+([_\w-]+[_\w\d-]*)/', '/following-sibling::\1[position()=1]', $query);
             $query = str_replace(']*', ']', $query);
             $query = str_replace(']/*', ']', $query);
         }
