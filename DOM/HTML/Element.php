@@ -168,6 +168,6 @@ class DOM_HTML_Element extends DOMElement
     
     public function __toString()
     {
-        return $this->ownerDocument->saveHTML($this);
+        return $this->ownerDocument->saveXML($this);
     }
 }

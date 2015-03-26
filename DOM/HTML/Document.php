@@ -11,7 +11,7 @@ require_once __DIR__ . '/Element/Form.php';
 
 class DOM_HTML_Document extends DOMDocument
 {
-    const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title></title><meta /></head><body></body></html>';
+    const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title> </title><meta /></head><body></body></html>';
     
     // params
     public $formatOutput = false;
@@ -19,6 +19,9 @@ class DOM_HTML_Document extends DOMDocument
     public $preserveWhiteSpace = false;
 
     // rendering
+    private static $_view;
+    private $_asView = false;
+    
     public $xpath = null;
     private $_fields = ['input', 'select', 'textarea'];
 
@@ -34,7 +37,7 @@ class DOM_HTML_Document extends DOMDocument
         'time', 'title', 'tr', 'tt', 'u', 'ul', 'var', 'video', 'wbr'
     ];
 
-    public function __construct($template = null, $encoding = 'utf-8')
+    public function __construct($as_view = false, $template = null, $encoding = 'utf-8')
     {
         parent::__construct('', $encoding);
 
@@ -53,8 +56,18 @@ class DOM_HTML_Document extends DOMDocument
         $this->formatOutput = false;
         $this->preserveWhiteSpace = false;
         $this->standalone = true;
+        
+        if ($as_view && is_null(self::getView())) {
+            $this->_asView = true;
+            self::$_view = $this;
+        }
     }
 
+    public static function getView()
+    {
+        return self::$_view;
+    }
+    
     public function create($definition)
     {
         $normalized = $this->_normalize($definition);
@@ -167,6 +180,13 @@ class DOM_HTML_Document extends DOMDocument
 
     public function __toString()
     {
-        return substr($this->saveHTML(), 0, -1);
+        return substr($this->saveXML(), 39, -1);
+    }
+
+    public function __destruct()
+    {
+        if ($this->_asView) {
+            echo self::$_view;
+        }
     }
 }
