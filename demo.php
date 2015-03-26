@@ -1,44 +1,24 @@
 <?php
 require_once 'DOM/HTML/Document.php';
 
-$view = new DOM_HTML_Document(true);
-$view->title = 'DOM_HTML_Document';
+$document = new DOM_HTML_Document();
+$body = $document->select('body');
 
-$body = $view->body;
-
-$body->append([
-    'tag' => 'h2',
-    'data' => '... world!',
-    'attributes' => [
-        'class' => 'class-name',
-        'data-test' => 'value'
-    ]
+$form = $body->append([
+    'tag' => 'form'
 ]);
 
-$body->insert([
-    'tag' => 'h1',
-    'data' => 'Hello ...'
-], 'h2');
-
-$body->append([
-    'tag' => 'p',
-    'data' => '...'
+$form->append([
+    'tag' => 'select'
 ]);
 
-$input = $body->append([
+$form->append([
     'tag' => 'input',
     'attributes' => [
-        'type' => 'checkbox',
-        'checked' => 'checked',
-        'autocomplete' => true
-    ]
+        'type' => 'text'
+    ],
+    'value' => 123
 ]);
 
-$input->decorate([
-    'tag' => 'p'
-]);
-
-$body->append([
-    'tag' => 'code',
-    'data' => (string) $body->select(':scope > $p > input:checkbox:autocomplete:checked')
-]);
+var_dump($document->select('form input:text'));
+echo $document->select('form')->elements->item(0)->parentNode;

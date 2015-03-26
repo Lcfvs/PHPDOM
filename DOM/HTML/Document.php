@@ -4,140 +4,169 @@ Copyright 2015 Lcf.vs
  -
 Released under the MIT license
  -
-https://github.com/Lcfvs/reg-invoker
+https://github.com/Lcfvs/PHPDOM
 */
-require_once __DIR__ . '/../Document.php';
 require_once __DIR__ . '/Element.php';
+require_once __DIR__ . '/Element/Form.php';
 
-class DOM_HTML_Document extends DOM_Document
+class DOM_HTML_Document extends DOMDocument
 {
-    // doctype
-    protected $_publicId = 'html';
-
+    const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title></title><meta /></head><body></body></html>';
+    
     // params
-    public $encoding = 'utf-8';
-    public $lang = 'en';
+    public $formatOutput = false;
     public $standalone = true;
+    public $preserveWhiteSpace = false;
 
-    public function __construct($as_view = false)
+    // rendering
+    public $xpath = null;
+    private $_fields = ['input', 'select', 'textarea'];
+
+    private $_unbreakables = [
+        'a', 'abbr', 'acronym', 'area', 'audio', 'b', 'base', 'bdi', 'bdo',
+        'big', 'body', 'br', 'button', 'canvas', 'cite', 'code', 'col',
+        'colgroup', 'command', 'datalist', 'del', 'dfn', 'dl', 'em', 'embed',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hgroup', 'hr', 'html',
+        'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'link',
+        'map', 'mark', 'meta', 'meter', 'noscript', 'object', 'ol', 'optgroup',
+        'output', 'pre', 'progress', 'q', 'ruby', 's', 'samp', 'script',
+        'select', 'small', 'span', 'strong', 'style', 'sub', 'sup', 'textarea',
+        'time', 'title', 'tr', 'tt', 'u', 'ul', 'var', 'video', 'wbr'
+    ];
+
+    public function __construct($template = null, $encoding = 'utf-8')
     {
-        parent::__construct('html', $as_view);
+        parent::__construct('', $encoding);
 
-        $document = $this->_document;
-        $document->registerNodeClass('DOMElement', 'DOM_HTML_Element');
-
-        $html = $document->documentElement;
-
-        $html->setAttribute('lang', $this->lang);
-
-        $head = $html->select('head');
-
-        if (!$head) {
-            $head = $this->append([
-                'tag' => 'head'
-            ]);
-        }
-
-        if (!$head->select('title')) {
-            $head->append([
-                'tag' => 'title'
-            ]);
-        }
-
-        $charset_meta = $head->select('meta[charset]');
-
-        if ($charset_meta) {
-            $charset = $charset_meta->getAttribute('charset');
-            $encoding = $this->encoding;
-
-            if ($charset->value !== $encoding) {
-                $charset->value = $encoding;
-            }
+        if (empty($template)) {
+            $this->loadHTML(self::DEFAULT_TEMPLATE);
+            
+            $this->getElementsByTagName('meta')
+                ->item(0)
+                    ->setAttribute('charset', $encoding);
         } else {
-            $head->append([
-                'tag' => 'meta',
-                'attributes' => [
-                    'charset' => 'utf-8'
-                ]
-            ]);
+            @$this->loadHTMLFile($template);
         }
 
-        if (!$html->select('body')) {
-            $this->append([
-                'tag' => 'body',
-            ]);
-        }
-    }
-
-    public function __get($name)
-    {
-        switch ($name) {
-            case 'title':
-                return $this->select('title')->textContent;
-
-            case 'body':
-                return $this->select('body');
-
-            case 'forms':
-                return $this->selectAll('body form');
-
-            default:
-                return parent::__get($name);
-        }
-    }
-
-    public function __set($name, $value)
-    {
-        switch ($name) {
-            case 'title':
-                $title = $this->select('title');
-                $node = $title->select('*');
-
-                if ($node) {
-                    $node->nodeValue = $value;
-                } else {
-                    $title->appendChild($this->createTextNode($value));
-                }
-            break;
-
-            case 'lang':
-                $document_element = $this->_document->documentElement;
-                $document_element->setAttribute('lang', $this->_lang);
-            break;
-
-            default:
-                parent::__set($name, $value);
-        }
-    }
-
-    public function append($definition)
-    {
-        return $this->_document->documentElement->append($definition);
-    }
-
-    public function insert($definition, $before)
-    {
-        return $this->_document->documentElement->insert($definition, $before);
+        $this->xpath = new DOMXpath($this);
+        $this->registerNodeClass('DOMElement', 'DOM_HTML_Element');
+        $this->formatOutput = false;
+        $this->preserveWhiteSpace = false;
+        $this->standalone = true;
     }
 
     public function create($definition)
     {
-        return $this->_document->documentElement->create($definition);
+        $normalized = $this->_normalize($definition);
+        $tag = $normalized->tag;
+        $data = $normalized->data;
+        $value = $normalized->value;
+        $node = $this->createElement($tag);
+        $node->setAttributes($normalized->attributes);
+
+        if (in_array($tag, $this->_fields)) { 
+            if (!is_null($value)) {
+                $node->value = $value;
+            }
+        } else {
+            foreach ($normalized->data as $key => $line) {
+                if ($key) {
+                    $node->appendChild($this->createElement('br'));
+                }
+
+                $node->appendChild($this->createTextNode($line));
+            }
+        }
+
+        return $node;
+    }
+
+    private function _normalize($definition)
+    {
+        $fields = $this->_fields;
+        $unbreakables = $this->_unbreakables;
+
+        $normalized = (object) $definition;
+
+        $attributes = @$normalized->attributes;
+        $before = @$normalized->before;
+        $data = @$normalized->data;
+        $tag = @$normalized->tag;
+        @$normalized->value =
+        $value = @$normalized->value;
+
+        if (!is_array($attributes)) {
+            $attributes = [];
+        }
+
+        switch (gettype($before)) {
+            case 'NULL':
+                $normalized->before = null;
+            break;
+
+            case 'string':
+                $normalized->before = $this->querySelector($before);
+            break;
+        }
+
+        if (in_array($tag, $fields)) {
+            $data = [];
+
+            foreach ($attributes as $name => $value) {
+                switch ($name) {
+                    case 'autocomplete':
+                        $attributes[$name] = $value ? 'on' : 'off';
+                    break;
+
+                    case 'autofocus':
+                    case 'disabled':
+                    case 'readonly':
+                    case 'required':
+                        $attributes[$name] = $value ? $name : '';
+                    break;
+                }
+            }
+        } else {
+            switch (gettype($data)) {
+                case 'string':
+                    if (in_array($tag, $unbreakables)) {
+                        $data = preg_split('/\n\r?/', $data);
+                    } else {
+                        $data = [$data];
+                    }
+                break;
+
+                default:
+                    $data = [];
+            }
+        }
+
+        $normalized->data = $data;
+        $normalized->attributes = $attributes;
+
+        return $normalized;
+    }
+
+    public function loadFragment($path)
+    {
+        $fragment = $this->createDocumentFragment();
+        $fragment->appendXML(file_get_contents($path));
+
+        return $fragment;
+    }
+
+    public function select($selector)
+    {
+        return $this->documentElement->select($selector);
+    }
+
+    public function selectAll($selector)
+    {
+        return $this->documentElement->selectAll($selector);
     }
 
     public function __toString()
     {
-        return substr($this->_document->saveHTML(), 0, -1);
-    }
-
-    public function __destruct()
-    {
-        $view = self::$_view;
-
-        if (!$this->_isRendered && $view === $this->_document) {
-            $this->_isRendered = true;
-
-            echo $this;
-        }
+        return substr($this->saveHTML(), 0, -1);
     }
 }

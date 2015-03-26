@@ -5,9 +5,9 @@ Copyright © 2008 - 2009 TJ Holowaychuk <tj@vision-media.ca>
  -
 Released under the MIT license
  -
-https://github.com/Lcfvs/reg-invoker
+https://github.com/Lcfvs/PHPDOM
 */
-class DOM_Selector
+class DOM_HTML_Selector
 {
     private static $_queries = [];
 
@@ -39,7 +39,7 @@ class DOM_Selector
             // input:autocomplete, :autocomplete
             $query = preg_replace('/(.+)?:(autocomplete)/', '\1[@\2="on"]', $query);
             // input:button, input:submit, etc.
-            $query = preg_replace('/(input)?:(text|password|checkbox|radio|button|submit|reset|file|hidden|image|datetime|datetime-local|date|month|time|week|number|range|email|url|search|tel|color)/', 'input[@type="\2"]', $query);
+            $query = preg_replace('/input:(text|password|checkbox|radio|button|submit|reset|file|hidden|image|datetime-local|datetime|date|month|time|week|number|range|email|url|search|tel|color)/', 'input[@type="\1"]', $query);
             // foo[id]
             $query = preg_replace('/(\w+)\[([_\w-]+[_\w\d-]*)\]/', '\1[@\2]', $query);
             // [id]
