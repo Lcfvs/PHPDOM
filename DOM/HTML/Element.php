@@ -50,6 +50,15 @@ class DOM_HTML_Element extends DOMElement
         return $node;
     }
 
+    public function children()
+    {
+        $nodes = $this->childNodes;
+        
+        if ($nodes) {
+            return new DOM_HTML_NodeList($nodes);
+        }
+    }
+    
     public function select($selector)
     {
         $node_list = $this->selectAll($selector);
@@ -85,15 +94,6 @@ class DOM_HTML_Element extends DOMElement
             case 'elements':
                 if ($this->nodeName === 'form') {
                     return $this->selectAll('input, select, textarea');
-                }
-                
-                break;
-                
-            case 'childNodes':
-                $nodes = $this->childNodes;
-                
-                if ($nodes) {
-                    return new DOM_HTML_NodeList($nodes);
                 }
                 
                 break;
