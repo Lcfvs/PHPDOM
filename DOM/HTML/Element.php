@@ -53,12 +53,12 @@ class DOM_HTML_Element extends DOMElement
     public function children()
     {
         $nodes = $this->childNodes;
-        
+
         if ($nodes) {
             return new DOM_HTML_NodeList($nodes);
         }
     }
-    
+
     public function select($selector)
     {
         $node_list = $this->selectAll($selector);
@@ -71,14 +71,14 @@ class DOM_HTML_Element extends DOMElement
     public function selectAll($selector)
     {
         $query = DOM_HTML_Selector::parse($selector);
-        
+
         $node_list = $this->ownerDocument->xpath->evaluate($query, $this);
-        
+
         if ($node_list instanceof DOMNodeList) {
             return new DOM_HTML_NodeList($node_list);
         }
     }
-    
+
     public function setAttributes($attributes)
     {
         foreach ($attributes as $name => $value) {
@@ -87,7 +87,7 @@ class DOM_HTML_Element extends DOMElement
 
         return $this;
     }
-    
+
     public function __get($name)
     {
         switch ($name) {
@@ -95,14 +95,14 @@ class DOM_HTML_Element extends DOMElement
                 if ($this->nodeName === 'form') {
                     return $this->selectAll('input, select, textarea');
                 }
-                
+
                 break;
-                
+
             case 'value':
                 switch ($this->nodeName) {
                     case 'textarea':
                         return $this->nodeValue;
-                    
+
                     case 'input':
                         switch ($this->getAttribute('type')) {
                             case 'checkbox':
@@ -110,43 +110,43 @@ class DOM_HTML_Element extends DOMElement
                                 if ($this->getAttribute('checked') !== 'checked') {
                                     break;
                                 }
-                            
+
                             default:
                                 return $this->getAttribute('value');
                         }
-                        
+
                         break;
-                        
+
                     case 'select':
                         $selected_option = $this->select(':scope > [selected="selected"]');
-                        
+
                         if ($selected_option) {
                             return $selected_option->getAttribute('value');
                         }
                 }
-                
+
                 break;
         }
     }
-    
+
     public function __set($name, $value)
     {
         if ($name === 'value') {
             switch ($this->nodeName) {
                 case 'select':
                     $selected_option = $this->select(':scope > [value="' . $value . '"]');
-                    
+
                     if ($selected_option) {
                         $selected_option->setAttribute('selected', 'selected');
                     }
-                    
+
                 break;
-                    
+
                 case 'textarea':
                     $this->nodeValue = $value;
-                    
+
                     break;
-                
+
                 case 'input':
                     switch ($this->getAttribute('type')) {
                         case 'checkbox':
@@ -156,16 +156,16 @@ class DOM_HTML_Element extends DOMElement
                             } else {
                                 $this->removeAttribute('checked');
                             }
-                            
+
                             break;
-                    
+
                         default:
                             $this->setAttribute('value', $value);
                     }
             }
         }
     }
-    
+
     public function __toString()
     {
         return $this->ownerDocument->saveXML($this);

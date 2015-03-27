@@ -12,7 +12,7 @@ require_once __DIR__ . '/NodeList.php';
 class DOM_HTML_Document extends DOMDocument
 {
     const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title> </title><meta /></head><body></body></html>';
-    
+
     // params
     public $formatOutput = false;
     public $standalone = true;
@@ -21,7 +21,7 @@ class DOM_HTML_Document extends DOMDocument
     // rendering
     private static $_view;
     private $_asView = false;
-    
+
     private $_xpath = null;
     private $_fields = ['input', 'select', 'textarea'];
 
@@ -43,7 +43,7 @@ class DOM_HTML_Document extends DOMDocument
 
         if (empty($template)) {
             $this->loadHTML(self::DEFAULT_TEMPLATE);
-            
+
             $this->getElementsByTagName('meta')
                 ->item(0)
                     ->setAttribute('charset', $encoding);
@@ -56,7 +56,7 @@ class DOM_HTML_Document extends DOMDocument
         $this->formatOutput = false;
         $this->preserveWhiteSpace = false;
         $this->standalone = true;
-        
+
         if ($as_view && is_null(self::$_view)) {
             $this->_asView = true;
             self::$_view = $this;
@@ -66,14 +66,14 @@ class DOM_HTML_Document extends DOMDocument
     public static function getView()
     {
         $view = self::$_view;
-        
+
         if ($view) {
             return $view;
         }
-        
+
         return new self(true);
     }
-    
+
     public function create($definition)
     {
         $normalized = $this->_normalize($definition);
@@ -83,7 +83,7 @@ class DOM_HTML_Document extends DOMDocument
         $node = $this->createElement($tag);
         $node->setAttributes($normalized->attributes);
 
-        if (in_array($tag, $this->_fields)) { 
+        if (in_array($tag, $this->_fields)) {
             if (!is_null($value)) {
                 $node->value = $value;
             }
@@ -173,11 +173,11 @@ class DOM_HTML_Document extends DOMDocument
 
         return $fragment;
     }
-    
+
     public function getElementsByTagName($tag)
     {
         $node_list = parent::getElementsByTagName($tag);
-        
+
         if ($node_list) {
             return new DOM_HTML_NodeList($node_list);
         }
@@ -192,7 +192,7 @@ class DOM_HTML_Document extends DOMDocument
     {
         return $this->documentElement->selectAll($selector);
     }
-    
+
     public function __get($name)
     {
         switch ($name) {
@@ -208,26 +208,26 @@ class DOM_HTML_Document extends DOMDocument
                 return $this->_xpath;
         }
     }
-    
+
     public function __set($name, $value)
     {
         switch ($name) {
             case 'title':
                 $title = $this->select('title');
                 $node = $title->select('*');
-                
+
                 if ($node) {
                     $node->nodeValue = $value;
                 } else {
                     $title->appendChild($this->createTextNode($value));
                 }
             break;
-            
+
             case 'lang':
                 $document_element = $this->documentElement;
                 $document_element->setAttribute('lang', $value);
             break;
-            
+
             default:
                 parent::__set($name, $value);
         }
