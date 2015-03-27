@@ -82,6 +82,13 @@ class DOM_HTML_Element extends DOMElement
     public function __get($name)
     {
         switch ($name) {
+            case 'elements':
+                if ($this->nodeName === 'form') {
+                    return $this->selectAll('input, select, textarea');
+                }
+                
+                break;
+                
             case 'childNodes':
                 $nodes = $this->childNodes;
                 
@@ -90,15 +97,7 @@ class DOM_HTML_Element extends DOMElement
                 }
                 
                 break;
-            
-            case 'parentNode':
-                $node = $this->parentNode;
                 
-                if ($node && $node->nodeName === 'form') {
-                    return new DOM_HTML_Element_Form($node);
-                }
-                
-                break;
             case 'value':
                 switch ($this->nodeName) {
                     case 'textarea':
@@ -125,6 +124,8 @@ class DOM_HTML_Element extends DOMElement
                             return $selected_option->getAttribute('value');
                         }
                 }
+                
+                break;
         }
     }
     

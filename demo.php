@@ -6,17 +6,17 @@ $document = new DOM_HTML_Document(true);
 $document->title = 'Document title';
 $document->lang = 'en';
 
-$body = $document->select('body');
+$body = $document->body;
 
-$form = $body->append([
+$body->append([
     'tag' => 'form'
 ]);
 
-$p = $form->append([
+$p = $body->select('form')->append([
     'tag' => 'p'
 ]);
 
-$label = $form->append([
+$label = $p->append([
     'tag' => 'label',
     'data' => 'label :'
 ]);

@@ -28,10 +28,6 @@ class DOM_HTML_NodeList
     {
         $node = $this->_nodeList->item($index);
         
-        if ($node && $node->nodeName === 'form') {
-            return new DOM_HTML_Element_Form($node);
-        }
-        
         return $node;
     }
     

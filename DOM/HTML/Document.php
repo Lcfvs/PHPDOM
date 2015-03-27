@@ -7,7 +7,6 @@ Released under the MIT license
 https://github.com/Lcfvs/PHPDOM
 */
 require_once __DIR__ . '/Element.php';
-require_once __DIR__ . '/Element/Form.php';
 require_once __DIR__ . '/NodeList.php';
 
 class DOM_HTML_Document extends DOMDocument
@@ -173,17 +172,6 @@ class DOM_HTML_Document extends DOMDocument
         $fragment->appendXML(file_get_contents($path));
 
         return $fragment;
-    }
-    
-    public function getElementById($id)
-    {
-        $node = parent::getElementById($id);
-        
-        if ($node->nodeName === 'form') {
-            return new DOM_HTML_Element_Form($node);
-        }
-        
-        return $node;
     }
     
     public function getElementsByTagName($tag)
