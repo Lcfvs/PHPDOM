@@ -22,7 +22,7 @@ class DOM_HTML_Document extends DOMDocument
     private static $_view;
     private $_asView = false;
     
-    public $xpath = null;
+    private $_xpath = null;
     private $_fields = ['input', 'select', 'textarea'];
 
     private $_unbreakables = [
@@ -51,7 +51,7 @@ class DOM_HTML_Document extends DOMDocument
             @$this->loadHTMLFile($template);
         }
 
-        $this->xpath = new DOMXpath($this);
+        $this->_xpath = new DOMXpath($this);
         $this->registerNodeClass('DOMElement', 'DOM_HTML_Element');
         $this->formatOutput = false;
         $this->preserveWhiteSpace = false;
@@ -196,14 +196,16 @@ class DOM_HTML_Document extends DOMDocument
     public function __get($name)
     {
         switch ($name) {
-            case 'title':
-                return $this->select('title')->textContent;
             case 'body':
                 return $this->select('body');
             case 'forms':
                 return $this->selectAll('body form');
             case 'lang':
                 return $this->documentElement->getAttribute('lang');
+            case 'title':
+                return $this->select('title')->textContent;
+            case 'xpath':
+                return $this->_xpath;
         }
     }
     
