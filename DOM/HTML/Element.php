@@ -6,7 +6,6 @@ Released under the MIT license
  -
 https://github.com/Lcfvs/PHPDOM
 */
-require_once __DIR__ . '/NodeList.php';
 require_once __DIR__ . '/Selector.php';
 
 class DOM_HTML_Element extends DOMElement

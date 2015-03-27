@@ -8,6 +8,7 @@ https://github.com/Lcfvs/PHPDOM
 */
 require_once __DIR__ . '/Element.php';
 require_once __DIR__ . '/Element/Form.php';
+require_once __DIR__ . '/NodeList.php';
 
 class DOM_HTML_Document extends DOMDocument
 {
@@ -57,7 +58,7 @@ class DOM_HTML_Document extends DOMDocument
         $this->preserveWhiteSpace = false;
         $this->standalone = true;
         
-        if ($as_view && is_null(self::getView())) {
+        if ($as_view && is_null(self::$_view)) {
             $this->_asView = true;
             self::$_view = $this;
         }
@@ -65,7 +66,13 @@ class DOM_HTML_Document extends DOMDocument
 
     public static function getView()
     {
-        return self::$_view;
+        $view = self::$_view;
+        
+        if ($view) {
+            return $view;
+        }
+        
+        return new self(true);
     }
     
     public function create($definition)
@@ -167,6 +174,26 @@ class DOM_HTML_Document extends DOMDocument
 
         return $fragment;
     }
+    
+    public function getElementById($id)
+    {
+        $node = parent::getElementById($id);
+        
+        if ($node->nodeName === 'form') {
+            return new DOM_HTML_Element_Form($node);
+        }
+        
+        return $node;
+    }
+    
+    public function getElementsByTagName($tag)
+    {
+        $node_list = parent::getElementsByTagName($tag);
+        
+        if ($node_list) {
+            return new DOM_HTML_NodeList($node_list);
+        }
+    }
 
     public function select($selector)
     {
@@ -176,6 +203,44 @@ class DOM_HTML_Document extends DOMDocument
     public function selectAll($selector)
     {
         return $this->documentElement->selectAll($selector);
+    }
+    
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'title':
+                return $this->select('title')->textContent;
+            case 'body':
+                return $this->select('body');
+            case 'forms':
+                return $this->selectAll('body form');
+            case 'lang':
+                return $this->documentElement->getAttribute('lang');
+        }
+    }
+    
+    public function __set($name, $value)
+    {
+        switch ($name) {
+            case 'title':
+                $title = $this->select('title');
+                $node = $title->select('*');
+                
+                if ($node) {
+                    $node->nodeValue = $value;
+                } else {
+                    $title->appendChild($this->createTextNode($value));
+                }
+            break;
+            
+            case 'lang':
+                $document_element = $this->documentElement;
+                $document_element->setAttribute('lang', $value);
+            break;
+            
+            default:
+                parent::__set($name, $value);
+        }
     }
 
     public function __toString()
