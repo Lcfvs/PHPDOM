@@ -29,4 +29,4 @@ $label->append([
     'value' => 'an escaped value "\''
 ]);
 
-$form->appendChild($document->loadFragment('./demo-fragment.html'));
+$form->appendChild($document->loadFragment('./fragment.html'));

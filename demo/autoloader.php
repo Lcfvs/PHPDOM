@@ -12,5 +12,5 @@ function __autoload($class_name) {
 
     $file_name .= str_replace('_', DIRECTORY_SEPARATOR, $class_name) . '.php';
 
-    require '../' . $file_name;
+    require '../../' . $file_name;
 }
