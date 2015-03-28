@@ -43,10 +43,12 @@ class Document extends \DOMDocument
         parent::__construct('1.0', $encoding);
 
         if (empty($template)) {
-            $this->loadHTML(self::DEFAULT_TEMPLATE);
+            $template = self::DEFAULT_TEMPLATE;
         } else {
-            @$this->loadHTMLFile($template);
+            $template = file_get_contents($template);
         }
+        
+        @$this->loadHTML($template);
 
         $this->_xpath = new \DOMXpath($this);
         $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
