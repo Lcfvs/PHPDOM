@@ -7,14 +7,33 @@ Released under the MIT license
  -
 https://github.com/Lcfvs/PHPDOM
 */
-class DOM_HTML_Selector
+namespace PHPDOM\HTML;
+
+trait SelectorTrait
 {
     private static $_queries = [];
 
-    private function __construct()
-    {}
+    public function select($selector)
+    {
+        $node_list = $this->selectAll($selector);
 
-    public static function parse($selector)
+        if ($node_list instanceof NodeList) {
+            return $node_list->item(0);
+        }
+    }
+
+    public function selectAll($selector)
+    {
+        $query = self::_parse($selector);
+
+        $node_list = $this->ownerDocument->xpath->evaluate($query, $this);
+
+        if ($node_list instanceof \DOMNodeList) {
+            return new NodeList($node_list);
+        }
+    }
+
+    private static function _parse($selector)
     {
         $queries = &self::$_queries;
 

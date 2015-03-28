@@ -6,11 +6,13 @@ Released under the MIT license
  -
 https://github.com/Lcfvs/PHPDOM
 */
-class DOM_HTML_NodeList
+namespace PHPDOM\HTML;
+
+class NodeList
 {
     private $_nodeList = null;
 
-    public function __construct(DOMNodeList $node_list)
+    public function __construct(\DOMNodeList $node_list)
     {
         $this->_nodeList = $node_list;
     }
@@ -21,7 +23,7 @@ class DOM_HTML_NodeList
             return $this->_nodeList->length;
         }
 
-        throw new Exception('Undefined property ' . $name);
+        throw new \Exception('Undefined property ' . $name);
     }
 
     public function item($index)

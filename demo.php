@@ -1,14 +1,14 @@
 <?php
-require_once 'DOM/HTML/Document.php';
+namespace PHPDOM;
 
-$document = new DOM_HTML_Document(true);
+require_once 'autoloader.php';
 
+$document = new HTML\Document(true);
 $document->title = 'Document title';
 $document->lang = 'en';
-
 $body = $document->body;
 
-$body->append([
+$form = $body->append([
     'tag' => 'form'
 ]);
 
@@ -28,3 +28,5 @@ $label->append([
     ],
     'value' => 'an escaped value "\''
 ]);
+
+$form->appendChild($document->loadFragment('./demo-fragment.html'));

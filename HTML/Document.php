@@ -6,11 +6,12 @@ Released under the MIT license
  -
 https://github.com/Lcfvs/PHPDOM
 */
-require_once __DIR__ . '/Element.php';
-require_once __DIR__ . '/NodeList.php';
+namespace PHPDOM\HTML;
 
-class DOM_HTML_Document extends DOMDocument
+class Document extends \DOMDocument
 {
+    use SelectorTrait;
+
     const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title> </title><meta /></head><body></body></html>';
 
     // params
@@ -51,8 +52,10 @@ class DOM_HTML_Document extends DOMDocument
             @$this->loadHTMLFile($template);
         }
 
-        $this->_xpath = new DOMXpath($this);
-        $this->registerNodeClass('DOMElement', 'DOM_HTML_Element');
+        $this->_xpath = new \DOMXpath($this);
+        $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
+        $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
+        $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
         $this->formatOutput = false;
         $this->preserveWhiteSpace = false;
         $this->standalone = true;
@@ -179,7 +182,7 @@ class DOM_HTML_Document extends DOMDocument
         $node_list = parent::getElementsByTagName($tag);
 
         if ($node_list) {
-            return new DOM_HTML_NodeList($node_list);
+            return new NodeList($node_list);
         }
     }
 

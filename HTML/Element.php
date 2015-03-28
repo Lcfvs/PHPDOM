@@ -6,78 +6,11 @@ Released under the MIT license
  -
 https://github.com/Lcfvs/PHPDOM
 */
-require_once __DIR__ . '/Selector.php';
+namespace PHPDOM\HTML;
 
-class DOM_HTML_Element extends DOMElement
+class Element extends \DOMElement
 {
-    public function append($definition)
-    {
-        $node = $this->ownerDocument->create($definition);
-        $this->appendChild($node);
-
-        return $node;
-    }
-
-    public function decorate($definition)
-    {
-        $node = $this->parentNode->insert($definition, $this);
-        $node->appendChild($this);
-
-        return $node;
-    }
-
-    public function insert($definition, $before)
-    {
-        $node = $this->ownerDocument->create($definition);
-
-        if ($before instanceof self) {
-            $this->insertBefore($node, $before);
-
-            return $node;
-        }
-
-        $before = $this->select($before);
-        $this->insertBefore($node, $before);
-
-        return $node;
-    }
-
-    public function prepend($definition)
-    {
-        $node = $this->ownerDocument->create($definition);
-        $this->parentNode->insertBefore($node, $this);
-
-        return $node;
-    }
-
-    public function children()
-    {
-        $nodes = $this->childNodes;
-
-        if ($nodes) {
-            return new DOM_HTML_NodeList($nodes);
-        }
-    }
-
-    public function select($selector)
-    {
-        $node_list = $this->selectAll($selector);
-
-        if ($node_list instanceof DOM_HTML_NodeList) {
-            return $node_list->item(0);
-        }
-    }
-
-    public function selectAll($selector)
-    {
-        $query = DOM_HTML_Selector::parse($selector);
-
-        $node_list = $this->ownerDocument->xpath->evaluate($query, $this);
-
-        if ($node_list instanceof DOMNodeList) {
-            return new DOM_HTML_NodeList($node_list);
-        }
-    }
+    use NodeTrait;
 
     public function setAttributes($attributes)
     {
@@ -164,10 +97,5 @@ class DOM_HTML_Element extends DOMElement
                     }
             }
         }
-    }
-
-    public function __toString()
-    {
-        return $this->ownerDocument->saveXML($this);
     }
 }
