@@ -3,7 +3,7 @@ namespace PHPDOM;
 
 require_once 'autoloader.php';
 
-$document = new HTML\Document(true);
+$document = new HTML\Document(true, 'templates/document.html');
 $document->title = 'Document title';
 $document->lang = 'en';
 $body = $document->body;
@@ -18,7 +18,7 @@ $p = $body->select('form')->append([
 
 $label = $p->append([
     'tag' => 'label',
-    'data' => 'label :'
+    'data' => 'label : '
 ]);
 
 $label->append([
@@ -29,4 +29,4 @@ $label->append([
     'value' => 'an escaped value "\''
 ]);
 
-$form->appendChild($document->loadFragment('./fragment.html'));
+$form->appendChild($document->loadFragment('templates/fragment.html'));

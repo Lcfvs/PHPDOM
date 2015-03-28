@@ -12,7 +12,7 @@ class Document extends \DOMDocument
 {
     use SelectorTrait;
 
-    const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title> </title><meta /></head><body></body></html>';
+    const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title></title></head><body></body></html>';
 
     // params
     public $formatOutput = false;
@@ -40,14 +40,10 @@ class Document extends \DOMDocument
 
     public function __construct($as_view = false, $template = null, $encoding = 'utf-8')
     {
-        parent::__construct('', $encoding);
+        parent::__construct('1.0', $encoding);
 
         if (empty($template)) {
             $this->loadHTML(self::DEFAULT_TEMPLATE);
-
-            $this->getElementsByTagName('meta')
-                ->item(0)
-                    ->setAttribute('charset', $encoding);
         } else {
             @$this->loadHTMLFile($template);
         }
@@ -56,9 +52,25 @@ class Document extends \DOMDocument
         $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
         $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
         $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
+        
         $this->formatOutput = false;
         $this->preserveWhiteSpace = false;
         $this->standalone = true;
+        $this->encoding = $encoding;
+
+        $meta = $this->select('head meta[charset]');
+        
+        if ($meta) {
+            $meta->setAttribute('charset', $encoding);
+        } else {
+            $this->select('head')
+                ->append([
+                    'tag' => 'meta',
+                    'attributes' => [
+                        'charset' => $encoding
+                    ]
+                ]);
+        }
 
         if ($as_view && is_null(self::$_view)) {
             $this->_asView = true;
@@ -238,7 +250,7 @@ class Document extends \DOMDocument
 
     public function __toString()
     {
-        return substr($this->saveXML(), 39, -1);
+        return substr($this->saveXML(), 56, -1);
     }
 
     public function __destruct()
