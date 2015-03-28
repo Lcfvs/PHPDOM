@@ -35,10 +35,10 @@ trait SelectorTrait
 
     private static function _parse($selector)
     {
-        $queries = &self::$_queries;
+        $registered_queries = &self::$_queries;
 
-        if (array_key_exists($selector, $queries)) {
-            return $queries[$selector];
+        if (array_key_exists($selector, $registered_queries)) {
+            return $registered_queries[$selector];
         }
 
         $query = $selector;
@@ -105,7 +105,8 @@ trait SelectorTrait
         $query = implode('/descendant::', $queries);
         $query = 'descendant-or-self::' . $query;
         // :scope
-        $query = preg_replace('/(((\|)?descendant-or-self::):scope)/', '.\3', $query);
+        $query = preg_replace('/(\|)?descendant-or-self:::scope\/\[/', '\1*[', $query);
+        $query = preg_replace('/(\|)?descendant-or-self:::scope/', '\1.', $query);
         // $element
         $sub_queries = explode(',', $query);
 
@@ -122,8 +123,8 @@ trait SelectorTrait
             $sub_queries[$key] = $sub_query;
         }
 
-        $query = implode(',', $sub_queries);
+        echo $query = implode(',', $sub_queries);echo '<br>';
 
-        return $queries[$selector] = $query;
+        return $registered_queries[$selector] = $query;
     }
 }

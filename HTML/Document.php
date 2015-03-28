@@ -25,6 +25,7 @@ class Document extends \DOMDocument
 
     private $_xpath = null;
     private $_fields = ['input', 'select', 'textarea'];
+    private $_medias = ['audio', 'video'];
 
     private $_unbreakables = [
         'a', 'abbr', 'acronym', 'area', 'audio', 'b', 'base', 'bdi', 'bdo',
@@ -119,9 +120,6 @@ class Document extends \DOMDocument
 
     private function _normalize($definition)
     {
-        $fields = $this->_fields;
-        $unbreakables = $this->_unbreakables;
-
         $normalized = (object) $definition;
 
         $attributes = @$normalized->attributes;
@@ -145,36 +143,76 @@ class Document extends \DOMDocument
             break;
         }
 
-        if (in_array($tag, $fields)) {
-            $data = [];
-
-            foreach ($attributes as $name => $value) {
-                switch ($name) {
-                    case 'autocomplete':
-                        $attributes[$name] = $value ? 'on' : 'off';
-                    break;
-
-                    case 'autofocus':
-                    case 'disabled':
-                    case 'readonly':
-                    case 'required':
-                        $attributes[$name] = $value ? $name : '';
-                    break;
-                }
-            }
-        } else {
-            switch (gettype($data)) {
-                case 'string':
-                    if (in_array($tag, $unbreakables)) {
-                        $data = preg_split('/\n\r?/', $data);
-                    } else {
-                        $data = [$data];
+        switch ($tag) {
+            case 'script':
+                foreach ($attributes as $name => $value) {
+                    switch ($name) {
+                        case 'async':
+                        case 'defer':
+                            $attributes[$name] = $value ? $name : '';
+                        break;
                     }
-                break;
-
-                default:
+                }
+                
+            break;
+                
+            case 'track':
+                foreach ($attributes as $name => $value) {
+                    switch ($name) {
+                        case 'default':
+                            $attributes[$name] = $value ? $name : '';
+                        break;
+                    }
+                }
+                
+            break;
+            
+            default:
+                if (in_array($tag, $this->_fields)) {
                     $data = [];
-            }
+
+                    foreach ($attributes as $name => $value) {
+                        switch ($name) {
+                            case 'autocomplete':
+                                $attributes[$name] = $value ? 'on' : 'off';
+                            break;
+
+                            case 'autofocus':
+                            case 'disabled':
+                            case 'readonly':
+                            case 'required':
+                            case 'multiple':
+                                $attributes[$name] = $value ? $name : '';
+                            break;
+                        }
+                    }
+                } else if (in_array($tag, $this->_medias)) {
+                    foreach ($attributes as $name => $value) {
+                        switch ($name) {
+                            case 'autoplay':
+                            case 'defer':
+                            case 'controls':
+                            case 'loop':
+                            case 'muted':
+                                $attributes[$name] = $value ? $name : '';
+                            break;
+                        }
+                    }
+                } else {
+                    switch (gettype($data)) {
+                        case 'string':
+                            if (in_array($tag, $this->_unbreakables)) {
+                                $data = preg_split('/\n\r?/', $data);
+                            } else {
+                                $data = [$data];
+                            }
+                            
+                        break;
+
+                        default:
+                            $data = [];
+                    }
+                }
         }
 
         $normalized->data = $data;
