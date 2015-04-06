@@ -61,6 +61,14 @@ trait NodeTrait
         }
     }
 
+    public function replace($definition)
+    {
+        $node = $this->ownerDocument->create($definition);
+        $this->parentNode->replaceChild($node, $this);
+
+        return $node;
+    }
+    
     public function __toString()
     {
         return $this->ownerDocument->saveXML($this);
