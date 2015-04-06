@@ -252,10 +252,14 @@ class Document extends \DOMDocument
     
     public function addScript($path)
     {
+        if (!preg_match('/^(http(s)?:)?\/\//', $path)) {
+            $path = '/js/' . $path;
+        }
+        
         $script = $this->create([ 
             'tag' => 'script', 
             'attributes' => [ 
-                'src' => '/js/' . $path 
+                'src' => $path 
             ] 
         ]);
         
