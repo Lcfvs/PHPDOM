@@ -245,7 +245,7 @@ class Document extends \DOMDocument
             'tag' => 'link', 
             'attributes' => [ 
                 'rel' => 'stylesheet', 
-                'href' => $path 
+                'href' => '/css/' . $path 
             ] 
         ]); 
     }
@@ -255,7 +255,7 @@ class Document extends \DOMDocument
         $script = $this->create([ 
             'tag' => 'script', 
             'attributes' => [ 
-                'src' => $path 
+                'src' => '/js/' . $path 
             ] 
         ]);
         
@@ -320,6 +320,12 @@ class Document extends \DOMDocument
 
     public function __toString()
     {
+        foreach ($this->_scripts as $script) {
+            $this->body->appendChild($script);
+        }
+        
+        $this->_scripts = [];
+        
         return substr($this->saveXML(), 56, -1);
     }
 
@@ -327,10 +333,6 @@ class Document extends \DOMDocument
     {
         if (!$this->_asView) {
             return;
-        }
-        
-        foreach ($this->_scripts as $script) {
-            $this->body->appendChild($script);
         }
         
         echo self::$_view;
