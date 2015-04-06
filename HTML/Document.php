@@ -22,6 +22,7 @@ class Document extends \DOMDocument
     // rendering
     private static $_view;
     private $_asView = false;
+    private $_scripts = [];
 
     private $_xpath = null;
     private $_fields = ['input', 'select', 'textarea'];
@@ -237,6 +238,27 @@ class Document extends \DOMDocument
             return new NodeList($node_list);
         }
     }
+    
+    public function addLink($path)
+    { 
+        $this->select('head')->append([ 
+            'tag' => 'link', 
+            'attributes' => [ 
+                'rel' => 'stylesheet', 
+                'href' => $path 
+            ] 
+        ]); 
+    }
+    
+    public function addScript($path)
+    { 
+        $this->_script[] = $this->body->append([ 
+            'tag' => 'script', 
+            'attributes' => [ 
+                'src' => $path 
+            ] 
+        ]); 
+    }
 
     public function select($selector)
     {
@@ -295,8 +317,16 @@ class Document extends \DOMDocument
 
     public function __destruct()
     {
-        if ($this->_asView) {
-            echo self::$_view;
+        if (!$this->_asView) {
+            return;
         }
+        
+        $body = $this->body;
+        
+        foreach ($this->_scripts as $script) {
+            $body->appendChild($script);
+        }
+        
+        echo self::$_view;
     }
 }
