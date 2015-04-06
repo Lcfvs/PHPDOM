@@ -321,10 +321,8 @@ class Document extends \DOMDocument
             return;
         }
         
-        $body = $this->body;
-        
         foreach ($this->_scripts as $script) {
-            $body->appendChild($script);
+            $this->body->appendChild($script);
         }
         
         echo self::$_view;
