@@ -106,8 +106,8 @@ class Document extends \DOMDocument
             if (!is_null($value)) {
                 $node->value = $value;
             }
-        } else {
-            foreach ($normalized->data as $key => $line) {
+        } else if (!empty($data)) {
+            foreach ($data as $key => $line) {
                 if ($key) {
                     $node->appendChild($this->createElement('br'));
                 }
@@ -260,7 +260,7 @@ class Document extends \DOMDocument
         ]);
         
         if ($this->_asView) {
-            $this->_script[] = $script;
+            $this->_scripts[] = $script;
         } else {
             $this->body->appendChild($script);
         }
