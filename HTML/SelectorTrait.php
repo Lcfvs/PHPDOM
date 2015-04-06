@@ -123,7 +123,7 @@ trait SelectorTrait
             $sub_queries[$key] = $sub_query;
         }
 
-        echo $query = implode(',', $sub_queries);echo '<br>';
+        $query = implode(',', $sub_queries);
 
         return $registered_queries[$selector] = $query;
     }
