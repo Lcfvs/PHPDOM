@@ -241,7 +241,7 @@ class Document extends \DOMDocument
     
     public function addLink($path)
     { 
-        $this->select('head')->append([ 
+        return $this->select('head')->append([ 
             'tag' => 'link', 
             'attributes' => [ 
                 'rel' => 'stylesheet', 
@@ -251,13 +251,21 @@ class Document extends \DOMDocument
     }
     
     public function addScript($path)
-    { 
-        $this->_script[] = $this->body->append([ 
+    {
+        $script = $this->create([ 
             'tag' => 'script', 
             'attributes' => [ 
                 'src' => $path 
             ] 
-        ]); 
+        ]);
+        
+        if ($this->_asView) {
+            $this->_script[] = $script;
+        } else {
+            $this->body->appendChild($script);
+        }
+        
+        return $script;
     }
 
     public function select($selector)
