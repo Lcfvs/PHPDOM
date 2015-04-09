@@ -51,8 +51,6 @@ class Document extends \DOMDocument
         }
         
         @$this->loadHTML($template);
-
-        $this->_xpath = new \DOMXpath($this);
         $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
         $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
         $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
@@ -80,6 +78,24 @@ class Document extends \DOMDocument
             $this->_asView = true;
             self::$_view = $this;
         }
+    }
+    
+    public function loadHTML($source, $options = null)
+    {
+        @parent::loadHTML($source, $options);
+
+        $this->_xpath = new \DOMXpath($this);
+        
+        return $this;
+    }
+    
+    public function loadHTMLFile($filename, $options = null)
+    {
+        @parent::loadHTMLFile($source, $options);
+
+        $this->_xpath = new \DOMXpath($this);
+        
+        return $this;
     }
 
     public static function getView()
