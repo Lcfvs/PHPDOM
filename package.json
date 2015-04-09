@@ -20,7 +20,7 @@
     "url": "git://github.com/Lcfvs/PHPDOM.git"
   },
   "engines": {
-    "PHP": ">=5.3"
+    "PHP": ">=5.4"
   },
   "readmeFilename": "readme.md",
   "bugs": {
