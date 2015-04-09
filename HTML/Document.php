@@ -76,15 +76,15 @@ class Document extends \DOMDocument
                 ]);
         }
 
-        if ($as_view && is_null(self::$_view)) {
+        if ($as_view && is_null(static::$_view)) {
             $this->_asView = true;
-            self::$_view = $this;
+            static::$_view = $this;
         }
     }
 
     public static function getView()
     {
-        $view = self::$_view;
+        $view = static::$_view;
 
         if ($view) {
             return $view;
@@ -339,6 +339,6 @@ class Document extends \DOMDocument
             return;
         }
         
-        echo self::$_view;
+        echo static::$_view;
     }
 }
