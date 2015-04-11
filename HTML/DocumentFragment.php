@@ -12,4 +12,6 @@ namespace PHPDOM\HTML;
 class DocumentFragment extends \DOMDocumentFragment
 {
     use NodeTrait;
+    
+    public $parent = null;
 }

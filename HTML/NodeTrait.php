@@ -20,7 +20,7 @@ trait NodeTrait
     public function decorate($definition)
     {
         $node = $this->parentNode->insert($definition, $this);
-        $node->appendChild($this);
+        $node->append($this);
 
         return $node;
     }
@@ -29,6 +29,10 @@ trait NodeTrait
     {
         if ($definition instanceof self || $definition instanceof DocumentFragment) {
             $node = $definition;
+            
+            if ($definition instanceof DocumentFragment) {
+                $node->parent = $this;
+            }
         } else {
             $node = $this->ownerDocument->create($definition);
         }
