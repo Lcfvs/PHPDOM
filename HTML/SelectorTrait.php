@@ -24,10 +24,6 @@ trait SelectorTrait
     {
         $query = self::_parse($selector);
         
-        if ($this instanceof DocumentFragment) {
-            $query = preg_replace('/(^|\|)(descendant(?:-or-self)::)/', '\1/\2', $query);
-        }
-        
         $node_list = $this->ownerDocument->xpath->evaluate($query, $this);
 
         if ($node_list instanceof \DOMNodeList) {
