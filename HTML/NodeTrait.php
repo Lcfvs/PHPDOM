@@ -19,7 +19,22 @@ trait NodeTrait
 
     public function decorate($definition)
     {
-        $node = $this->parentNode->insert($definition, $this);
+        if ($definition instanceof self || $definition instanceof DocumentFragment) {
+            $node = $definition;
+            
+            if ($definition instanceof DocumentFragment) {
+                $node->parent = $this;
+            }
+        } else {
+            $node = $this->ownerDocument->create($definition);
+        }
+        
+        if (!empty($this->parentNode)) {
+            $this->parentNode->insert($node, $this);
+        } else if (!empty($this->parent)) {
+            $this->parent->insert($node, $this);
+        }
+        
         $node->append($this);
 
         return $node;
