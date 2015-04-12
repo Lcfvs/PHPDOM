@@ -37,7 +37,6 @@ $node_list = $document->forms->item(0)->elements;
 [Tutorials summary](./index.md#summary)<br />
 [Main summary](../readme.md#summary)
 
-## <a name="select-an-element">Select an element</a>
 ````PHP
 $node_list = $document->children();
 ````
