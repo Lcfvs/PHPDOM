@@ -14,31 +14,54 @@ trait NodeTrait
     
     public function append($definition)
     {
-        $node = $this->ownerDocument->create($definition);
-        $this->appendChild($node);
-
-        return $node;
+        return $this->insert($definition);
     }
 
     public function decorate($definition)
     {
-        $node = $this->parentNode->insert($definition, $this);
-        $node->appendChild($this);
+        if ($definition instanceof self || $definition instanceof DocumentFragment) {
+            $node = $definition;
+            
+            if ($definition instanceof DocumentFragment) {
+                $node->parent = $this;
+            }
+        } else {
+            $node = $this->ownerDocument->create($definition);
+        }
+        
+        if (!empty($this->parentNode)) {
+            $this->parentNode->insert($node, $this);
+        } else if (!empty($this->parent)) {
+            $this->parent->insert($node, $this);
+        }
+        
+        $node->append($this);
 
         return $node;
     }
 
-    public function insert($definition, $before)
+    public function insert($definition, $before = null)
     {
-        $node = $this->ownerDocument->create($definition);
+        if ($definition instanceof self || $definition instanceof DocumentFragment) {
+            $node = $definition;
+            
+            if ($definition instanceof DocumentFragment) {
+                $node->parent = $this;
+            }
+        } else {
+            $node = $this->ownerDocument->create($definition);
+        }
 
-        if ($before instanceof self) {
+        if ($before instanceof self instanceof DocumentFragment) {
             $this->insertBefore($node, $before);
 
             return $node;
         }
 
-        $before = $this->select($before);
+        if (gettype($before) === 'string') {
+            $before = $this->select($before);
+        }
+        
         $this->insertBefore($node, $before);
 
         return $node;
@@ -46,8 +69,21 @@ trait NodeTrait
 
     public function prepend($definition)
     {
-        $node = $this->ownerDocument->create($definition);
-        $this->parentNode->insertBefore($node, $this);
+        if ($definition instanceof self || $definition instanceof DocumentFragment) {
+            $node = $definition;
+            
+            if ($definition instanceof DocumentFragment) {
+                $node->parent = $this;
+            }
+        } else {
+            $node = $this->ownerDocument->create($definition);
+        }
+        
+        if (!empty($this->parentNode)) {
+            $this->parentNode->insertBefore($node, $this);
+        } else if (!empty($this->parent)) {
+            $this->parent->insertBefore($node, $this);
+        }
 
         return $node;
     }
@@ -63,10 +99,79 @@ trait NodeTrait
 
     public function replace($definition)
     {
-        $node = $this->ownerDocument->create($definition);
-        $this->parentNode->replaceChild($node, $this);
+        if ($definition instanceof self || $definition instanceof DocumentFragment) {
+            $node = $definition;
+            
+            if ($definition instanceof DocumentFragment) {
+                $node->parent = $this;
+            }
+        } else {
+            $node = $this->ownerDocument->create($definition);
+        }
+        
+        if (!empty($this->parentNode)) {
+            $this->parentNode->replaceChild($node, $this);
+        } else if (!empty($this->parent)) {
+            $this->parent->replaceChild($node, $this);
+        }
 
         return $node;
+    }
+
+    public function addClass($name)
+    {
+        $this->removeClass($name);
+        
+        $class = $this->getAttribute('class');
+        
+        if ($class) {
+            $class->nodeValue .= ' ' . $name;
+        } else {
+            $this->setAttribute('class', $name);
+        }
+
+        return $node;
+    }
+
+    public function removeClass($name = null)
+    {
+        if (is_null($name)) {
+            $this->removeAttribute('class');
+            
+            return $this;
+        }
+        
+        $class = $this->getAttribute('class');
+        
+        if (empty($class)) {
+            return $node;
+        }
+        
+        $classes = trim(preg_plit('/((?:^|\s*)' . $name . '\s*)/', '', $class->nodeValue));
+        
+        if (empty($classes)) {
+            $this->removeAttribute('class');
+        } else {
+            $class->nodeValue = $classes;
+        }
+
+        return $node;
+    }
+    
+    public function addScript($path, $directory = '/js/', array $attributes = [])
+    {
+        $definition = array_merge([ 
+            'tag' => 'script', 
+            'attributes' => [ 
+                'src' => $directory . $path 
+            ] 
+        ], $attributes);
+        
+        if ($this instanceof Document) {
+            return $this->body->append($definition);
+        } else {
+            return $this->append($definition);
+        }
     }
     
     public function __toString()

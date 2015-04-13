@@ -10,8 +10,6 @@ namespace PHPDOM\HTML;
 
 class Document extends \DOMDocument
 {
-    use SelectorTrait;
-
     const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title></title></head><body></body></html>';
 
     // params
@@ -55,6 +53,7 @@ class Document extends \DOMDocument
         $this->_xpath = new \DOMXpath($this);
         $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
         $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
+        $this->registerNodeClass('\\DOMText', 'PHPDOM\\HTML\\Text');
         $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
         
         $this->formatOutput = false;
@@ -87,6 +86,12 @@ class Document extends \DOMDocument
 
     public function create($definition)
     {
+        $type = gettype($definition);
+        
+        if ($type !== 'array' && $type !== 'object') {
+            return $this->createTextNode(strval($definition));
+        }
+    
         $normalized = $this->_normalize($definition);
         $tag = $normalized->tag;
         $data = $normalized->data;
@@ -107,6 +112,10 @@ class Document extends \DOMDocument
                 $node->appendChild($this->createTextNode($line));
             }
         }
+        
+        foreach ($normalized->children as $child) {
+            $node->append($child);
+        }
 
         return $node;
     }
@@ -119,8 +128,13 @@ class Document extends \DOMDocument
         $before = @$normalized->before;
         $data = @$normalized->data;
         $tag = @$normalized->tag;
+        $children = @$normalized->children;
         @$normalized->value =
         $value = @$normalized->value;
+
+        if (!is_array($children)) {
+            $normalized->children = [];
+        }
 
         if (!is_array($attributes)) {
             $attributes = [];
@@ -231,31 +245,17 @@ class Document extends \DOMDocument
         }
     }
     
-    public function addLink($path)
+    public function addStyleSheet($path, $directory = '/css/', array $attributes = [])
     { 
-        return $this->select('head')->append([ 
+        return $this->select('head')->append(array_merge([ 
             'tag' => 'link', 
             'attributes' => [ 
                 'rel' => 'stylesheet', 
-                'href' => '/css/' . $path 
+                'href' => $directory . $path
             ] 
-        ]); 
+        ], $attributes)); 
     }
     
-    public function addScript($path)
-    {
-        $script = $this->create([ 
-            'tag' => 'script', 
-            'attributes' => [ 
-                'src' => '/js/' . $path 
-            ] 
-        ]);
-        
-        $this->body->appendChild($script);
-        
-        return $script;
-    }
-
     public function select($selector)
     {
         return $this->documentElement->select($selector);
@@ -287,7 +287,7 @@ class Document extends \DOMDocument
         switch ($name) {
             case 'title':
                 $title = $this->select('title');
-                $node = $title->select('*');
+                $node = $title->childNodes->item(0);
 
                 if ($node) {
                     $node->nodeValue = $value;
