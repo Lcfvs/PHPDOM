@@ -256,6 +256,27 @@ class Document extends \DOMDocument
         ], $attributes)); 
     }
     
+    public function addScript($path, $directory = '/js/', array $attributes = [], $head = false)
+    {
+        $definition = array_merge([ 
+            'tag' => 'script', 
+            'attributes' => [ 
+                'src' => $directory . $path 
+            ] 
+        ], $attributes);
+        
+        if ($this instanceof Document) {
+          
+            if($head) {
+                return $this->select('head')->append($definition);
+            }
+            
+            return $this->body->append($definition);
+        } else {
+            return $this->append($definition);
+        }
+    }
+    
     public function select($selector)
     {
         return $this->documentElement->select($selector);

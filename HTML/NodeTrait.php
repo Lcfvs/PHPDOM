@@ -158,22 +158,6 @@ trait NodeTrait
         return $node;
     }
     
-    public function addScript($path, $directory = '/js/', array $attributes = [])
-    {
-        $definition = array_merge([ 
-            'tag' => 'script', 
-            'attributes' => [ 
-                'src' => $directory . $path 
-            ] 
-        ], $attributes);
-        
-        if ($this instanceof Document) {
-            return $this->body->append($definition);
-        } else {
-            return $this->append($definition);
-        }
-    }
-    
     public function __toString()
     {
         return $this->ownerDocument->saveHTML($this);
