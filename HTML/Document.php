@@ -39,13 +39,13 @@ class Document extends \DOMDocument
         $this->encoding = $encoding;
         
         if ($load_default_template) {
-            $this->loadHTML(static::DEFAULT_TEMPLATE);
+            $this->loadSource(static::DEFAULT_TEMPLATE);
         }
     }
     
-    public function loadHTML($source, $options = null)
+    public function loadSource($source, $options = LIBXML_NOWARNING)
     {
-        @parent::loadHTML($source, $options);
+        $this->loadHTML($source, $options);
 
         $encoding = $this->encoding;
         
@@ -76,11 +76,24 @@ class Document extends \DOMDocument
         return $this;
     }
 
-    public function loadHTMLFile($filename, $options = null)
+    public function loadSourceFile(
+        $filename,
+        $options = LIBXML_NOWARNING,
+        $use_include_path = false,
+        $context,
+        $offset = -1,
+        $maxlen
+    )
     {
-        $source = file_get_contents($filename);
+        $source = file_get_contents(
+            $filename,
+            $use_include_path,
+            $context,
+            $offset,
+            $maxlen
+        );
         
-        return $this->loadHTML($source);
+        return $this->loadSource($source, $options);
     }
 
     public function create($definition)
@@ -158,10 +171,30 @@ class Document extends \DOMDocument
         return $normalized;
     }
 
-    public function loadFragment($path)
+    public function loadFragmentFile(
+        $filename,
+        $options = LIBXML_NOWARNING,
+        $use_include_path = false,
+        $context,
+        $offset = -1,
+        $maxlen
+    )
+    {
+        $source = file_get_contents(
+            $filename,
+            $use_include_path,
+            $context,
+            $offset,
+            $maxlen
+        );
+
+        return $this->loadFragment($source, $options);
+    }
+
+    public function loadFragment($source, $options = LIBXML_NOWARNING)
     {
         $fragment = $this->createDocumentFragment();
-        $fragment->appendXML(file_get_contents($path));
+        $fragment->appendXML($source, $options);
 
         return $fragment;
     }
@@ -216,9 +249,9 @@ class Document extends \DOMDocument
         return $this->documentElement->selectAll($selector);
     }
 
-    public function save($path, $flags = null)
+    public function saveSource($filename, $flags = 0, $context = null)
     {
-        file_put_contents($path, $this, $flags);
+        file_put_contents($path, $this, $flags, $context);
         
         return $this;
     }

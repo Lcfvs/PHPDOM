@@ -137,13 +137,13 @@ trait NodeTrait
         || $value instanceof Text;
     }
 
-    public function save($path, $flags = null)
+    public function saveSource($filename, $flags = 0, $context = null)
     {
-        file_put_contents($path, $this, $flags);
+        file_put_contents($path, $this, $flags, $context);
         
         return $this;
     }
-    
+
     public function __toString()
     {
         return $this->ownerDocument->saveHTML($this);
