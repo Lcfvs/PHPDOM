@@ -43,9 +43,9 @@ class Document extends \DOMDocument
         }
     }
     
-    public function loadSource($source, $options = LIBXML_NOWARNING)
+    public function loadSource($source, $options = null)
     {
-        $this->loadHTML($source, $options);
+        @$this->loadHTML($source, $options);
 
         $encoding = $this->encoding;
         
@@ -78,7 +78,7 @@ class Document extends \DOMDocument
 
     public function loadSourceFile(
         $filename,
-        $options = LIBXML_NOWARNING,
+        $options = null,
         $use_include_path = false,
         $context = null,
         $offset = -1,
