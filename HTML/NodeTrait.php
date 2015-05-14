@@ -69,20 +69,18 @@ trait NodeTrait
 
     public function prepend($definition)
     {
+        $first_child = $this->firstChild;
+        
         if ($this->isNode($definition)) {
             $node = $definition;
-            
-            if ($definition instanceof DocumentFragment) {
-                $node->parent = $this;
-            }
         } else {
             $node = $this->ownerDocument->create($definition);
         }
         
-        if (!empty($this->parentNode)) {
-            $this->parentNode->insertBefore($node, $this);
-        } else if (!empty($this->parent)) {
-            $this->parent->insertBefore($node, $this);
+        if ($first_child) {
+            $this->insertBefore($node, $first_child);
+        } else {
+            $this->appendChild($node);
         }
 
         return $node;
