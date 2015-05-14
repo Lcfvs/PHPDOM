@@ -44,7 +44,7 @@ $fragment = $document->loadFragment($source);
 // or from a local file
 $document->loadFragmentFile($filename);
 // or from a remote file
-$document->loadFragmentFile($filename, $libxml_options, $use_include_path, $context);
+$document->loadFragmentFile($filename, $use_include_path, $context);
 ````
 [Summary](#summary)<br />
 [Tutorials summary](./readme.md#summary)<br />

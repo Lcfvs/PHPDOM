@@ -85,6 +85,10 @@ class Document extends \DOMDocument
         $maxlen = null
     )
     {
+        if (is_null($maxlen)) {
+            $maxlen = filesize($filename);
+        }
+        
         $source = file_get_contents(
             $filename,
             $use_include_path,
@@ -92,7 +96,7 @@ class Document extends \DOMDocument
             $offset,
             $maxlen
         );
-        
+
         return $this->loadSource($source, $options);
     }
 
@@ -173,13 +177,16 @@ class Document extends \DOMDocument
 
     public function loadFragmentFile(
         $filename,
-        $options = LIBXML_NOWARNING,
         $use_include_path = false,
         $context = null,
         $offset = -1,
         $maxlen = null
     )
     {
+        if (is_null($maxlen)) {
+            $maxlen = filesize($filename);
+        }
+        
         $source = file_get_contents(
             $filename,
             $use_include_path,
@@ -188,13 +195,13 @@ class Document extends \DOMDocument
             $maxlen
         );
 
-        return $this->loadFragment($source, $options);
+        return $this->loadFragment($source);
     }
 
-    public function loadFragment($source, $options = LIBXML_NOWARNING)
+    public function loadFragment($source)
     {
         $fragment = $this->createDocumentFragment();
-        $fragment->appendXML($source, $options);
+        $fragment->appendXML($source);
 
         return $fragment;
     }
