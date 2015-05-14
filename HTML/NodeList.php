@@ -61,6 +61,24 @@ class NodeList
         return $node;
     }
 
+    public function remove()
+    {
+        $iterator = 0;
+        $length = $this->length;
+        
+        if (!$length) {
+            return $this;
+        }
+        
+        $fragment = $this->item(0)->ownerDocument->createDocumentFragment();
+        
+        for (; $iterator < $length; $iterator += 1) {
+            $fragment->appendChild($this->item($iterator));
+        }
+        
+        return $fragment->childNodes;
+    }
+    
     public function __toString()
     {
         $data = '';
