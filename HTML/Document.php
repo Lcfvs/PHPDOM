@@ -80,9 +80,9 @@ class Document extends \DOMDocument
         $filename,
         $options = LIBXML_NOWARNING,
         $use_include_path = false,
-        $context,
+        $context = null,
         $offset = -1,
-        $maxlen
+        $maxlen = null
     )
     {
         $source = file_get_contents(
@@ -175,9 +175,9 @@ class Document extends \DOMDocument
         $filename,
         $options = LIBXML_NOWARNING,
         $use_include_path = false,
-        $context,
+        $context = null,
         $offset = -1,
-        $maxlen
+        $maxlen = null
     )
     {
         $source = file_get_contents(
