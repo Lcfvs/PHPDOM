@@ -73,6 +73,10 @@ trait NodeTrait
         
         if ($this->isNode($definition)) {
             $node = $definition;
+            
+            if ($node instanceof DocumentFragment) {
+                $node->parent = $this;
+            }
         } else {
             $node = $this->ownerDocument->create($definition);
         }
@@ -114,6 +118,15 @@ trait NodeTrait
         }
 
         return $node;
+    }
+    
+    public function remove()
+    {
+        $fragment = $this->ownerDocument->createDocumentFragment();
+        
+        $fragment->appendChild($this);
+        
+        return $this;
     }
 
     public function addScript($path, $directory = '/js/', array $attributes = [])
