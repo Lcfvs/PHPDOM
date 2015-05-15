@@ -67,32 +67,28 @@ trait NodeTrait
         if ($this->isNode($definition)) {
             $node = $definition;
             
-            if ($definition instanceof DocumentFragment) {
+            if ($node instanceof DocumentFragment) {
                 $node->parent = $this;
             }
         } else {
             $node = $this->ownerDocument->create($definition);
         }
 
-        if ($this->isNode($before)) {
-            $this->insertBefore($node, $before);
-
-            return $node;
-        }
-
         if (gettype($before) === 'string') {
             $before = $this->select($before);
         }
         
-        $this->insertBefore($node, $before);
+        if ($node instanceof DocumentFragment && !$node->children()->length) {
+            @$this->insertBefore($node, $before);
+        } else {
+            $this->insertBefore($node, $before);
+        }
 
         return $node;
     }
 
     public function prepend($definition)
     {
-        $first_child = $this->firstChild;
-        
         if ($this->isNode($definition)) {
             $node = $definition;
             
@@ -103,11 +99,7 @@ trait NodeTrait
             $node = $this->ownerDocument->create($definition);
         }
         
-        if ($this->isNode($first_child)) {
-            $this->insertBefore($node, $first_child);
-        } else {
-            $this->appendChild($node);
-        }
+        $this->insert($node, $this->firstChild);
 
         return $node;
     }
