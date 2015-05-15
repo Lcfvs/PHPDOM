@@ -201,7 +201,7 @@ class Document extends \DOMDocument
     public function loadFragment($source)
     {
         $fragment = $this->createDocumentFragment();
-        $fragment->appendXML($source);
+        @$fragment->appendXML($source);
 
         return $fragment;
     }
