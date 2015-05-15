@@ -49,6 +49,7 @@ class Document extends \DOMDocument
         $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
         $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
         $this->registerNodeClass('\\DOMText', 'PHPDOM\\HTML\\Text');
+        $this->registerNodeClass('\\DOMComment', 'PHPDOM\\HTML\\Comment');
         $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
         
         $this->formatOutput = false;

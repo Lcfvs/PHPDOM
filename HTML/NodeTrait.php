@@ -103,7 +103,7 @@ trait NodeTrait
             $node = $this->ownerDocument->create($definition);
         }
         
-        if ($first_child) {
+        if ($this->isNode($first_child)) {
             $this->insertBefore($node, $first_child);
         } else {
             $this->appendChild($node);
