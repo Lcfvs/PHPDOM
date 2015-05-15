@@ -16,6 +16,28 @@ trait NodeTrait
     {
         return $this->insert($definition);
     }
+    
+    public function clean()
+    {
+        $this->normalize();
+        $items = $this->childNodes;
+        $iterator = 0;
+        
+        for (; $iterator < $items->length; $iterator += 1) {
+            $item = $items->item($iterator);
+            
+            $type = $item->nodeType;
+
+            if ($type === XML_COMMENT_NODE || ($type === XML_TEXT_NODE && preg_match('/^[\s\t\r\n]*$/', $item->nodeValue))) {
+                $item->remove();
+                $iterator -= 1;
+            } else if ($type === XML_ELEMENT_NODE || $type === XML_DOCUMENT_FRAG_NODE) {
+                $item->clean();
+            }
+        }
+        
+        return $this;
+    }
 
     public function decorate($definition)
     {
@@ -157,6 +179,12 @@ trait NodeTrait
 
     public function __toString()
     {
-        return $this->ownerDocument->saveHTML($this);
+        $owner_document = $this->ownerDocument;
+        
+        if (!$owner_document->formatOutput) {
+            $this->clean();
+        }
+        
+        return $owner_document->saveHTML($this);
     }
 }

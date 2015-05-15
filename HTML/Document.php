@@ -11,10 +11,6 @@ namespace PHPDOM\HTML;
 class Document extends \DOMDocument
 {
     const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title></title></head><body></body></html>';
-
-    public $formatOutput = false;
-    public $standalone = true;
-    public $preserveWhiteSpace = false;
     
     private $_bodyScripts = [];
 
@@ -307,6 +303,10 @@ class Document extends \DOMDocument
         }
         
         $this->_bodyScripts = [];
+        
+        if (!$this->formatOutput) {
+            $this->documentElement->clean();
+        }
         
         return substr($this->saveHTML(), 0, -1);
     }
