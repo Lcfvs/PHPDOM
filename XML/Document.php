@@ -6,27 +6,13 @@ Released under the MIT license
  -
 https://github.com/Lcfvs/PHPDOM
 */
-namespace PHPDOM\HTML;
+namespace PHPDOM\XML;
 
 class Document extends \DOMDocument
 {
-    const DEFAULT_TEMPLATE = '<!DOCTYPE html><html><head><title></title></head><body></body></html>';
-    
-    private $_bodyScripts = [];
+    const DEFAULT_TEMPLATE = '<root></root>';
 
     private $_xpath = null;
-
-    private $_unbreakables = [
-        'a', 'abbr', 'acronym', 'area', 'audio', 'b', 'base', 'bdi', 'bdo',
-        'big', 'body', 'br', 'button', 'canvas', 'cite', 'code', 'col',
-        'colgroup', 'command', 'datalist', 'del', 'dfn', 'dl', 'em', 'embed',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hgroup', 'hr', 'html',
-        'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'link',
-        'map', 'mark', 'meta', 'meter', 'noscript', 'object', 'ol', 'optgroup',
-        'output', 'pre', 'progress', 'q', 'ruby', 's', 'samp', 'script',
-        'select', 'small', 'span', 'strong', 'style', 'sub', 'sup', 'textarea',
-        'time', 'title', 'tr', 'tt', 'u', 'ul', 'var', 'video', 'wbr'
-    ];
 
     public function __construct($load_default_template = false, $encoding = 'utf-8')
     {
@@ -41,34 +27,20 @@ class Document extends \DOMDocument
     
     public function loadSource($source, $options = null)
     {
-        @$this->loadHTML($source, $options);
+        @$this->loadXML($source, $options);
 
         $encoding = $this->encoding;
         
         $this->_xpath = new \DOMXpath($this);
-        $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
-        $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
-        $this->registerNodeClass('\\DOMText', 'PHPDOM\\HTML\\Text');
-        $this->registerNodeClass('\\DOMComment', 'PHPDOM\\HTML\\Comment');
-        $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
+        $this->registerNodeClass('\\DOMNode', 'PHPDOM\\XML\\Node');
+        $this->registerNodeClass('\\DOMElement', 'PHPDOM\\XML\\Element');
+        $this->registerNodeClass('\\DOMText', 'PHPDOM\\XML\\Text');
+        $this->registerNodeClass('\\DOMComment', 'PHPDOM\\XML\\Comment');
+        $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\XML\\DocumentFragment');
         
         $this->formatOutput = false;
         $this->preserveWhiteSpace = false;
         $this->standalone = true;
-
-        $meta = $this->select('head meta[charset]');
-        
-        if ($meta) {
-            $meta->setAttribute('charset', $encoding);
-        } else {
-            $this->select('head')
-                ->append([
-                    'tag' => 'meta',
-                    'attributes' => [
-                        'charset' => $encoding
-                    ]
-                ]);
-        }
         
         return $this;
     }
@@ -97,25 +69,14 @@ class Document extends \DOMDocument
         return $this->loadSource($source, $options);
     }
 
-    public function create($definition = [])
+    public function create($definition = [], $namespace_URI = null)
     {
         $type = gettype($definition);
         
         if ($type !== 'array' && $type !== 'object') {
             $definition = strval($definition);
             $fragment = $this->createDocumentFragment();
-            $lines = preg_split('/\n\r?/', $definition);
-            
-            foreach ($lines as $key => $line) {
-                if ($key) {
-                    $fragment->append([
-                        'tag' => 'br'
-                    ]);
-                }
-                
-                $text_node = $this->createTextNode($line);
-                $fragment->append($text_node);
-            }
+            $fragment->append($definition);
             
             return $fragment;
         }
@@ -124,8 +85,14 @@ class Document extends \DOMDocument
             $node = $this->createDocumentFragment();
         } else {
             $normalized = $this->_normalize($definition);
-            $node = $this->createElement($normalized->tag);
-            $node->setAttr($normalized->attributes);
+            
+            if (empty($namespace_URI)) {
+                $node = $this->createElement($normalized->tag);
+                $node->setAttr($normalized->attributes);
+            } else {
+                $node = $this->createElementNS($namespace_URI, $normalized->tag);
+                $node->setAttr($namespace_URI);
+            }
         }
         
         $data = $normalized->data;
@@ -148,6 +115,7 @@ class Document extends \DOMDocument
         $attributes = @$normalized->attributes;
         $before = @$normalized->before;
         $data = @$normalized->data;
+        $ns = (string) @$normalized->ns;
         $tag = (string) @$normalized->tag;
         $children = @$normalized->children;
         @$normalized->value =
@@ -216,37 +184,6 @@ class Document extends \DOMDocument
         }
     }
     
-    public function addStyleSheet($path, $directory = '/css/', array $attributes = [])
-    { 
-        return $this->select('head')->append(array_merge([ 
-            'tag' => 'link', 
-            'attributes' => [ 
-                'rel' => 'stylesheet', 
-                'href' => $directory . $path
-            ] 
-        ], $attributes)); 
-    }
-    
-    public function addHeadScript($path, $directory = '/css/', array $attributes = [])
-    { 
-        return $this->select('head')->addScript($path, $directory, $attributes); 
-    }
-    
-    public function addBodyScript($path, $directory = '/css/', array $attributes = [])
-    {
-        $definition = array_merge([ 
-            'tag' => 'script', 
-            'attributes' => [ 
-                'src' => $directory . $path 
-            ] 
-        ], $attributes);
-        
-        $script = $this->create($definition);
-        $this->_bodyScripts[] = $script;
-        
-        return $script; 
-    }
-    
     public function select($selector)
     {
         return $this->documentElement->select($selector);
@@ -267,52 +204,17 @@ class Document extends \DOMDocument
     public function __get($name)
     {
         switch ($name) {
-            case 'body':
-                return $this->select('body');
-            case 'forms':
-                return $this->selectAll('body form');
-            case 'lang':
-                return $this->documentElement->getAttribute('lang');
-            case 'title':
-                return $this->select('title')->textContent;
             case 'xpath':
                 return $this->_xpath;
         }
     }
 
-    public function __set($name, $value)
-    {
-        switch ($name) {
-            case 'title':
-                $title = $this->select('title');
-                $node = $title->childNodes->item(0);
-
-                if ($node) {
-                    $node->nodeValue = $value;
-                } else {
-                    $title->appendChild($this->create($value));
-                }
-            break;
-
-            case 'lang':
-                $document_element = $this->documentElement;
-                $document_element->setAttribute('lang', $value);
-            break;
-        }
-    }
-
     public function __toString()
     {
-        foreach ($this->_bodyScripts as $script) {
-            $this->body->appendChild($script);
-        }
-        
-        $this->_bodyScripts = [];
-        
         if (!$this->formatOutput) {
             $this->documentElement->clean();
         }
         
-        return substr($this->saveHTML(), 0, -1);
+        return substr($this->saveXML(), 0, -1);
     }
 }

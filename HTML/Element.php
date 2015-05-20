@@ -116,7 +116,7 @@ class Element extends \DOMElement
         return $this;
     }
     
-    public function setAttributes($attributes)
+    public function setAttr($attributes)
     {
         foreach ($attributes as $name => $value) {
             $this->setAttribute($name, $value);
@@ -125,7 +125,7 @@ class Element extends \DOMElement
         return $this;
     }
 
-    public function getAttributes()
+    public function getAttr()
     {
         $attributes = [];
         $attribute_list = $this->attributes;
@@ -140,10 +140,10 @@ class Element extends \DOMElement
         return $attributes;
     }
     
-    public function removeAttributes(array $names = null)
+    public function removeAttr(array $names = null)
     {
         if (!is_null($names)) {
-            $names = array_keys($this->getAttributes());
+            $names = array_keys($this->getAttr());
         }
         
         foreach ($names as $name) {
