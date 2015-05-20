@@ -162,7 +162,7 @@ echo $document->body->selectAll('*');
 
 ## <a name="set-attributes-at-once-on-an-element">Set attributes at once on an element</a>
 ````PHP
-$body = $document->body->setAttributes([
+$body = $document->body->setAttr([
     'id' => 'body_id',
     'class' => '.body_class'
 ]);
@@ -173,19 +173,19 @@ $body = $document->body->setAttributes([
 
 ## <a name="remove-attributes-at-once-on-an-element">Remove attributes at once on an element</a>
 ````PHP
-$body = $document->body->removeAttributes([
+$body = $document->body->removeAttr([
     'id' => 'body_id',
     'class' => '.body_class'
 ]);
 
 // or 
-$body = $document->body->setAttributes([
+$body = $document->body->setAttr([
     'id' => null,
     'class' => null
 ]);
 
 // or to remove all attributes
-$body = $document->body->removeAttributes();
+$body = $document->body->removeAttr();
 ````
 [Summary](#summary)<br />
 [Tutorials summary](./readme.md#summary)<br />
