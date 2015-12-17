@@ -21,31 +21,35 @@ class Dataset
 	
 	public function __get($attr_name)
 	{
-		$normalized = $this->_normalize($attr_name);
+		$normalized = $this->_fromCamelCase($attr_name);
 		return $this->_element->getAttribute($normalized);
 	}
 	
 	public function __set($attr_name, $value)
 	{
-		$normalized = $this->_normalize($attr_name);
+		$normalized = $this->_fromCamelCase($attr_name);
 		
 		$this->_element->setAttribute($normalized, $value);
 	}
 	
 	public function getAll()
 	{
-		$attributes = $this->_element->getAttributes();
+		$data = [];
+		$attributes = $this->_element->getAttr();
 		
 		foreach ($attributes as $key => $value) {
 			if (strpos($key, 'data-') !== 0) {
-				unset($attributes[$key]);
+				continue;
 			}
+			
+			$data[$this->_toCamelCase($key)] = $value;
 		}
 		
-		return $attributes;
+		return $data;
 	}
 	
-	private function _normalize($name){
+	private function _fromCamelCase($name)
+	{
 		if (!preg_match_all(self::CAMEL_CASE_PATTERN, $name, $matches)) {
 			throw new \Exception('Invalid attribute name : ' . $name);
 		}
@@ -59,5 +63,19 @@ class Dataset
 	    }
 		
         return 'data-' . implode('_', $names);
+	}
+	
+	private function _toCamelCase($name)
+	{
+		$names = explode('-', $name);
+		array_shift($names);
+		
+	    foreach ($names as $key => $part) {
+		    if ($key) {
+				$names[$key] = ucfirst($part);
+			}
+	    }
+		
+        return implode('', $names);
 	}
 }
