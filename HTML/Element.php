@@ -14,6 +14,7 @@ class Element extends \DOMElement
     
     private $_fields = ['input', 'select', 'textarea'];
     private $_medias = ['audio', 'video'];
+	private $_dataset;
 
     public function addClass($name)
     {
@@ -172,6 +173,16 @@ class Element extends \DOMElement
     public function __get($name)
     {
         switch ($name) {
+            case 'data':
+				$dataset = $this->_dataset;
+				
+                if ($dataset) {
+					return $dataset;
+                }
+				
+				
+				return $this->_dataset = new Dataset($this);
+				
             case 'elements':
                 if ($this->nodeName === 'form') {
                     return $this->selectAll('input, select, textarea');

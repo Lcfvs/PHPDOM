@@ -209,7 +209,7 @@ $boolean = $document->select('title')->matches('head > title');
 
 ## <a name="apply-a-callback-on-each-nodelist-elements">Apply a callback on each node list elements</a>
 ````PHP
-$result = $document->select('*')->each(function ($element, $index, $node_list) {
+$result = $document->selectAll('*')->each(function ($element, $index, $node_list) {
     $element->setAttribute('id', 'element_' . $index);
 });
 ````
@@ -219,7 +219,7 @@ $result = $document->select('*')->each(function ($element, $index, $node_list) {
 
 ## <a name="apply-a-callback-on-every-nodelist-elements">Apply a callback on every node list elements</a>
 ````PHP
-$result = $document->select('*')->each(function ($element, $index, $node_list) {
+$result = $document->selectAll('*')->each(function ($element, $index, $node_list) {
     $element->setAttribute('id', 'element_' . $index);
 
     return $index < 3;
