@@ -36,7 +36,9 @@ class Document extends \DOMDocument
         
         if ($load_default_template) {
             $this->loadSource(static::DEFAULT_TEMPLATE);
-        }
+        } else {
+			$this->_init();
+		}
     }
     
     public function loadSource($source, $options = null)
@@ -44,13 +46,8 @@ class Document extends \DOMDocument
         @$this->loadHTML($source, $options);
 
         $encoding = $this->encoding;
-        
-        $this->_xpath = new \DOMXpath($this);
-        $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
-        $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
-        $this->registerNodeClass('\\DOMText', 'PHPDOM\\HTML\\Text');
-        $this->registerNodeClass('\\DOMComment', 'PHPDOM\\HTML\\Comment');
-        $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
+		
+		$this->_init();
         
         $this->formatOutput = false;
         $this->preserveWhiteSpace = false;
@@ -72,6 +69,16 @@ class Document extends \DOMDocument
         
         return $this;
     }
+	
+	private function _init()
+	{
+        $this->_xpath = new \DOMXpath($this);
+        $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
+        $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
+        $this->registerNodeClass('\\DOMText', 'PHPDOM\\HTML\\Text');
+        $this->registerNodeClass('\\DOMComment', 'PHPDOM\\HTML\\Comment');
+        $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
+	}
 
     public function loadSourceFile(
         $filename,
@@ -119,8 +126,10 @@ class Document extends \DOMDocument
             
             return $fragment;
         }
+		
+		$normalized = $this->_normalize($definition);
         
-        if (empty($normalized->tag) {
+        if (empty($normalized->tag)) {
             $node = $this->createDocumentFragment();
         } else {
             $normalized = $this->_normalize($definition);
