@@ -14,46 +14,31 @@ class Element extends \DOMElement
     
     private $_fields = ['input', 'select', 'textarea'];
     private $_medias = ['audio', 'video'];
+	private $_classList;
 	private $_dataset;
 
     public function addClass($name)
     {
-        $this->removeClass($name);
-        
-        $class = $this->getAttribute('class');
-        
-        if ($class) {
-            $class->nodeValue .= ' ' . $name;
-        } else {
-            $this->setAttribute('class', $name);
-        }
+		trigger_error(
+			'Element::addClass is deprecated, use Element::classList::add() instead',
+			E_USER_DEPRECATED
+		);
+		
+        $this->classList->add($name);
 
-        return $node;
+        return $this;
     }
 
     public function removeClass($name = null)
     {
-        if (is_null($name)) {
-            $this->removeAttribute('class');
-            
-            return $this;
-        }
-        
-        $class = $this->getAttribute('class');
-        
-        if (empty($class)) {
-            return $node;
-        }
-        
-        $classes = trim(preg_plit('/((?:^|\s*)' . $name . '\s*)/', '', $class->nodeValue));
-        
-        if (empty($classes)) {
-            $this->removeAttribute('class');
-        } else {
-            $class->nodeValue = $classes;
-        }
-
-        return $node;
+		trigger_error(
+			'Element::removeClass is deprecated, use Element::classList::remove() instead',
+			E_USER_DEPRECATED
+		);
+		
+        $this->classList->remove($name);
+		
+		return $this;
     }
     
     public function setAttribute($name, $value = null)
@@ -173,6 +158,16 @@ class Element extends \DOMElement
     public function __get($name)
     {
         switch ($name) {
+            case 'classList':
+				$class_list = $this->_classList;
+				
+                if ($class_list) {
+					return $class_list;
+                }
+				
+				
+				return $this->_classList = new ClassList($this);
+				
             case 'data':
 				$dataset = $this->_dataset;
 				
