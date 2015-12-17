@@ -15,6 +15,7 @@ class Document extends \DOMDocument
     private $_bodyScripts = [];
 
     private $_xpath = null;
+    private $_encoding = null;
 
     private $_unbreakables = [
         'a', 'abbr', 'acronym', 'area', 'audio', 'b', 'base', 'bdi', 'bdo',
@@ -32,52 +33,56 @@ class Document extends \DOMDocument
     {
         parent::__construct('1.0', $encoding);
 
-        $this->encoding = $encoding;
+        $this->_encoding = $encoding;
         
         if ($load_default_template) {
             $this->loadSource(static::DEFAULT_TEMPLATE);
         } else {
-			$this->_init();
+			$this->_init($load_default_template);
 		}
     }
     
     public function loadSource($source, $options = null)
     {
         @$this->loadHTML($source, $options);
-
-        $encoding = $this->encoding;
 		
-		$this->_init();
+		$this->_init(true);
         
         $this->formatOutput = false;
         $this->preserveWhiteSpace = false;
         $this->standalone = true;
-
-        $meta = $this->select('head meta[charset]');
-        
-        if ($meta) {
-            $meta->setAttribute('charset', $encoding);
-        } else {
-            $this->select('head')
-                ->append([
-                    'tag' => 'meta',
-                    'attributes' => [
-                        'charset' => $encoding
-                    ]
-                ]);
-        }
         
         return $this;
     }
 	
-	private function _init()
+	private function _init($has_template)
 	{
+        $this->encoding = $this->_encoding;
+		
         $this->_xpath = new \DOMXpath($this);
         $this->registerNodeClass('\\DOMNode', 'PHPDOM\\HTML\\Node');
         $this->registerNodeClass('\\DOMElement', 'PHPDOM\\HTML\\Element');
         $this->registerNodeClass('\\DOMText', 'PHPDOM\\HTML\\Text');
         $this->registerNodeClass('\\DOMComment', 'PHPDOM\\HTML\\Comment');
         $this->registerNodeClass('\\DOMDocumentFragment', 'PHPDOM\\HTML\\DocumentFragment');
+
+		if (!$has_template) {
+			return;
+		}
+
+        $meta = $this->select('head meta[charset]');
+        
+        if ($meta) {
+            $meta->setAttribute('charset', $this->_encoding);
+        } else {
+            $this->select('head')
+                ->append([
+                    'tag' => 'meta',
+                    'attributes' => [
+                        'charset' => $this->_encoding
+                    ]
+                ]);
+        }
 	}
 
     public function loadSourceFile(
