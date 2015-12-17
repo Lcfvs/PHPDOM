@@ -315,8 +315,12 @@ class Document extends \DOMDocument
         }
     }
 
-    public function __toString()
+	public function __toString()
     {
+		if (!$this->documentElement) {
+			return '';
+		}
+		
         foreach ($this->_bodyScripts as $script) {
             $this->body->appendChild($script);
         }
