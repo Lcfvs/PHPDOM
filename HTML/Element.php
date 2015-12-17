@@ -168,7 +168,7 @@ class Element extends \DOMElement
 				
 				return $this->_classList = new ClassList($this);
 				
-            case 'data':
+            case 'dataset':
 				$dataset = $this->_dataset;
 				
                 if ($dataset) {
