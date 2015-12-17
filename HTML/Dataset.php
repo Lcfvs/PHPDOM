@@ -32,6 +32,19 @@ class Dataset
 		$this->_element->setAttribute($normalized, $value);
 	}
 	
+	public function getAll()
+	{
+		$attributes = $this->_element->getAttributes();
+		
+		foreach ($attributes as $key => $value) {
+			if (strpos($key, 'data-') !== 0) {
+				unset($attributes[$key]);
+			}
+		}
+		
+		return $attributes;
+	}
+	
 	private function _normalize($name){
 		if (!preg_match_all(self::CAMEL_CASE_PATTERN, $name, $matches)) {
 			throw new \Exception('Invalid attribute name : ' . $name);
