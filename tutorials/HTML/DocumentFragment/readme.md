@@ -9,14 +9,14 @@
 * [Create a document fragment from a string](#Create-a-document-fragment-from-a-string)
 
 ## <a name="Create-a-document-fragment-from-a-file">Create a document fragment from a file</a>
-<b>Note :</b> This method as the same options as [file_get_contents()](http://php.net/manual/function.file-get-contents.php)
+<b>Note :</b> This method has the same options as [file_get_contents()](http://php.net/manual/function.file-get-contents.php)
 ````PHP
 $document_fragment = $document->loadFragmentFile('/path-or-url');
 ````
 [^](#summary)
 
 ## <a name="Create-a-document-fragment-from-a-string">Create a document fragment from a string</a>
-<b>Note :</b> This method as the same options as [file_get_contents()](http://php.net/manual/function.file-get-contents.php)
+<b>Note :</b> This method has the same options as [file_get_contents()](http://php.net/manual/function.file-get-contents.php)
 ````PHP
 $document_fragment = $document->loadFragment('<p>Content</p>');
 ````
