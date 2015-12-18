@@ -44,6 +44,46 @@ class NodeList
         return $result;
     }
     
+    public function even($callback)
+    {
+        $index = 0;
+        $length = $this->length;
+
+        for (; $index < $length; $index += 1) {
+            if ($index % 2) {
+                continue;
+            }
+            
+            $result = $callback($this->item($index), $index, $this);
+            
+            if (!$result) {
+                break;
+            }
+        }
+        
+        return $result;
+    }
+    
+    public function odd($callback)
+    {
+        $index = 0;
+        $length = $this->length;
+
+        for (; $index < $length; $index += 1) {
+            if ($index % 2 === 0) {
+                continue;
+            }
+            
+            $result = $callback($this->item($index), $index, $this);
+            
+            if (!$result) {
+                break;
+            }
+        }
+        
+        return $result;
+    }
+    
     public function every($callback)
     {
         $index = 0;

@@ -27,9 +27,14 @@ class Dataset
 	
 	public function __set($attr_name, $value)
 	{
+        $element = $this->_element;
 		$normalized = $this->_fromCamelCase($attr_name);
 		
-		$this->_element->setAttribute($normalized, $value);
+        if ($value === null) {
+            $element->removeAttribute($normalized);
+        } else {
+            $element->setAttribute($normalized, $value);
+        }
 	}
 	
 	public function getAll()
