@@ -1,6 +1,6 @@
 # <a name="title">PHPDOM</a>
 
-Cheatsheet
+The classLists
 
 ## <a name="summary">Summary</a>
 * [Add some classes on an element](#add-some-classes-on-an-element)
