@@ -104,6 +104,7 @@ $script = $document->addBodyScript('script.js', null, [/* extra attributes */]);
 [Main summary](../readme.md#summary)
 
 ## <a name="add-a-class-on-an-element">Add a class on element</a>
+[DEPRECATED] <a name="./classList.md#add-some-classes-on-an-element">See the classList.add()</a>
 ````PHP
 $body = $document->body->addClass('class-name');
 ````
@@ -112,6 +113,7 @@ $body = $document->body->addClass('class-name');
 [Main summary](../readme.md#summary)
 
 ## <a name="remove-a-class-on-an-element">Remove a class on an element</a>
+[DEPRECATED] <a name="./classList.md#remove-some-classes-from-an-element">See the classList.remove()</a>
 ````PHP
 $body = $document->body->removeClass('class-name');
 ````
@@ -120,6 +122,7 @@ $body = $document->body->removeClass('class-name');
 [Main summary](../readme.md#summary)
 
 ## <a name="remove-all-classes-on-an-element">Remove all classes on an element</a>
+[DEPRECATED] <a name="./classList.md#remove-all-classes-from-an-element">See the classList.remove()</a>
 ````PHP
 $body = $document->body->removeClass();
 ````
@@ -178,7 +181,7 @@ $body = $document->body->removeAttr([
     'class' => '.body_class'
 ]);
 
-// or 
+// or
 $body = $document->body->setAttr([
     'id' => null,
     'class' => null

@@ -17,22 +17,42 @@ class ClassList
 		$this->_element = $element;
 	}
 	
-	public function contains($class_name)
+	public function contains()
 	{
+        $searched = func_get_args();
+        
+        if (!empty($searched) && is_array($searched[0])) {
+            $searched = $searched[0];
+        }
+        
         $class_names = $this->getAll();
+        
+        foreach ($searched as $key => $class_name) {
+            if (array_search($class_name, $class_names) !== false) {
+                unset($searched[$key]);
+            }
+        }
 
-		return array_search($class_name, $class_names) !== false;
+		return count($searched) === 0;
 	}
 	
-	public function add($class_name)
+	public function add()
 	{
-		if (is_array($class_name)) {
-			foreach (class_name as $class)  {
-				$this->add($class);
+        $class_names = func_get_args();
+        
+        if (!empty($class_names) && is_array($class_names[0])) {
+            $class_names = $class_names[0];
+        }
+        
+		if (count($class_names) !== 1) {
+			foreach ($class_names as $class_name)  {
+				$this->add($class_name);
 			}
 			
 			return $this;
 		}
+        
+        $class_name = $class_names[0];
         
         if ($this->contains($class_name)) {
             return $this;
@@ -47,17 +67,30 @@ class ClassList
         return $this;
 	}
 	
-	public function remove($class_name)
+	public function remove()
 	{
-		if (is_array($class_name)) {
-			foreach (class_name as $class)  {
-				$this->remove($class);
+        $searched = func_get_args();
+        
+        if (!empty($searched) && is_array($searched[0])) {
+            $searched = $searched[0];
+        }
+        
+        $counter = count($searched);
+		$class_names = $this->getAll();
+        
+		if (!$counter) {
+			$searched = $class_names;
+		}
+        
+		if (count($searched) > 1) {
+			foreach ($searched as $class_name)  {
+				$this->remove($class_name);
 			}
 			
 			return $this;
 		}
-		
-		$class_names = $this->getAll();
+        
+        $class_name = $class_names[0];
 		
 		$key = array_search($class_name, $class_names);
 		

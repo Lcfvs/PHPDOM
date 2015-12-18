@@ -7,6 +7,8 @@ Tutorials
 * [Get the elements](./get-the-elements.md#title)
 * [Append, insert, etc.](./append-insert-etc.md#title)
 * [Optimize the parsing with the selectors cache](./optimize-the-parsing-with-the-selectors-cache.md#title)
+* [Append, insert, etc.](./append-insert-etc.md#title)
+* [The classLists](./classList.md#title)
 * [Cheatsheet](./cheatsheet.md#title)
 
 [Main summary](../readme.md#summary)
